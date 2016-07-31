@@ -14,10 +14,10 @@ pip3 install Flask
 
 Install SocketIO:
 ```
-pip install flask-socketio
+pip3 install flask-socketio
 ```
 
-## Running the server:
+## Running the server
 
 ### Linux
 ```
