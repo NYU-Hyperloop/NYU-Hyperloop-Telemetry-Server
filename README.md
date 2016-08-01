@@ -17,6 +17,11 @@ Install SocketIO:
 pip3 install flask-socketio
 ```
 
+Install Eventlet:
+```
+pip3 install eventlet
+```
+
 ## Running the server
 
 ### Linux

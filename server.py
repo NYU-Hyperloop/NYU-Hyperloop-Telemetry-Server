@@ -3,13 +3,17 @@ from flask_socketio import SocketIO, send, emit
 import threading
 import fakeserial as serial
 import time
+import eventlet
+
+# Eventlet configuration
+eventlet.monkey_patch()
 
 # Flask configuration
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
 
 # SocketIO configuration
-socketio = SocketIO(app)
+socketio = SocketIO(app, async_mode="eventlet")
 
 # A fake "Arduino" serial for testing purposes
 arduino_serial = serial.Serial(0)
