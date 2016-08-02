@@ -2,8 +2,7 @@
 A secure telemetry server between the pod and an off-site server
 
 ## Setting up the server
-Install Python 2.7 and PIP
-Note: gevent-websocket does not fully support Python 3
+Install Python 2.7 and PIP (gevent-websocket does not fully support Python 3)
 
 ### Install required tools:
 ```
@@ -15,15 +14,13 @@ pip install gevent
 pip install gevent-websocket
 ```
 ### Install Client Certificate
-Install ssl/client/client.p12 on your OS or internet browser.
-Current password: `loop`
+Install `ssl/client/client.p12` on your OS or internet browser. Current password: `loop`.
 
 ## Running the server
 ```
 python server.py
 ```
-The server runs at <https://127.0.0.1:8443>
-Note: The server will throw an SSLEOFError when the client first connects. Still looking for the exact cause.
+The server runs at <https://127.0.0.1:8443>. 
 
 ## (Extras) (Not needed when testing server)
 
