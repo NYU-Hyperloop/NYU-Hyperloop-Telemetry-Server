@@ -1,9 +1,9 @@
-<script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>
+<script type="text/javascript" src="//code.jquery.com/jquery-latest.js"></script>
 <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
 
 <script type="text/javascript" charset="utf-8">
     // Here we connect to the server socket
-    var socket = io.connect('http://' + document.domain + ':' + location.port);
+    var socket = io.connect('https://' + document.domain + ':' + location.port);
     
     // Event triggered once successfully connected
     socket.on('connect', function() {

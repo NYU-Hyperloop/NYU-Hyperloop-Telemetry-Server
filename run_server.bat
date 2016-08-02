@@ -1,3 +1,2 @@
-set FLASK_APP=server.py
-flask run
+C:\Python27\python.exe server.py
 pause
