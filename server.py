@@ -1,5 +1,7 @@
 from flask import Flask, render_template
 from flask_socketio import SocketIO, send, emit
+from gevent import monkey
+monkey.patch_all()
 import Queue
 import threading
 import time
@@ -69,6 +71,6 @@ if __name__ == '__main__':
                         ca_certs='ssl/server/ca.cer', 
                         cert_reqs=ssl.CERT_REQUIRED,
                         ssl_version=ssl.PROTOCOL_TLSv1_2) 
+
     while True:
         time.sleep(1)
-
