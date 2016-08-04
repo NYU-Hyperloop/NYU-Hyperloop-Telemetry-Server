@@ -46,7 +46,9 @@ def handle_connect_event():
     print('Client connected')
     arduino_thread = threading.Thread(target=arduino_serial.read, name='Arduino-Read-Thread')
     data_thread = threading.Thread(target=serve_data, name='Data-Server-Thread')
+    arduino_thread.daemon = True
     arduino_thread.start()
+    data_thread.daemon = True
     data_thread.start()
 
 # Triggered when a client disconnects from the server
@@ -67,4 +69,6 @@ if __name__ == '__main__':
                         ca_certs='ssl/server/ca.cer', 
                         cert_reqs=ssl.CERT_REQUIRED,
                         ssl_version=ssl.PROTOCOL_TLSv1_2) 
+    while True:
+        time.sleep(1)
 
