@@ -1,5 +1,7 @@
 from flask import Flask, render_template
 from flask_socketio import SocketIO, send, emit
+from gevent import monkey
+monkey.patch_all()
 import Queue
 import threading
 import time
@@ -46,7 +48,9 @@ def handle_connect_event():
     print('Client connected')
     arduino_thread = threading.Thread(target=arduino_serial.read, name='Arduino-Read-Thread')
     data_thread = threading.Thread(target=serve_data, name='Data-Server-Thread')
+    arduino_thread.daemon = True
     arduino_thread.start()
+    data_thread.daemon = True
     data_thread.start()
 
 # Triggered when a client disconnects from the server
@@ -68,3 +72,5 @@ if __name__ == '__main__':
                         cert_reqs=ssl.CERT_REQUIRED,
                         ssl_version=ssl.PROTOCOL_TLSv1_2) 
 
+    while True:
+        time.sleep(1)
