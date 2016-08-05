@@ -3,3 +3,7 @@
 
 # Python bytecode
 __pycache__
+*.pyc
+
+# Windows batch files
+*.bat

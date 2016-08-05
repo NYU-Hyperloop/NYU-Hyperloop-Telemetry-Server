@@ -1,3 +1,27 @@
-<!doctype html>
-<title>Data</title>
-    <h1>{{ data }}</h1>
+<script type="text/javascript" src="//code.jquery.com/jquery-latest.js"></script>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
+
+<script type="text/javascript" charset="utf-8">
+    // Here we connect to the server socket
+    var socket = io.connect('https://' + document.domain + ':' + location.port);
+    
+    // Event triggered once successfully connected
+    socket.on('connect', function() {
+        //socket.emit('hello', {data: 'I\'m connected!'});
+    });
+
+    // Event triggered when sensor data is received from the server
+    socket.on('sensor_data', function(message){
+        $('#data_1').text("Sensor 1 value: " + message);
+    });
+
+    // Our emergency brake function
+    function emergencyBrake()
+    {
+        socket.emit('brake', {type: 'emergency'});
+    }
+</script>
+
+<!-- The most terrible HTML you have seen. No CSS of course :P. -->
+<div id="data_1">Waiting for data...</div>
+<button onClick=emergencyBrake()>BRAKE NOW!</button>
