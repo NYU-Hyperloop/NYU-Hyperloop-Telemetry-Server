@@ -2,11 +2,8 @@
 <html>
 
 <head>
-    <!-- TODO: Replace all online dependencies with local ones -->
-    <script type="text/javascript" src="//code.jquery.com/jquery-latest.js"></script>
-    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
-
-
+    <script type="text/javascript" src="/static/jquery-3.1.0.min.js"></script>
+    <script type="text/javascript" src="/static/socket.io.js"></script>
     <script src="/static/raphael-2.1.4.min.js"></script>
     <script src="/static/justgage.js"></script>
 
@@ -30,14 +27,16 @@
         $("#connection_status").text("Disconnected");
     });
 
-    test_position = 0;
 
     // Event triggered when sensor data is received from the server
     socket.on('sensor_data', function(data){
-        g1.refresh(data['temperature_inside']);
-        g2.refresh(data['velocity']);
-        g3.refresh(test_position);
-        test_position += 1;
+        g1.refresh(data['velocity']);
+        g2.refresh(data['acceleration']);
+        g3.refresh(data['rpm']);
+        g4.refresh(data['temperature_inside']);
+        g5.refresh(data['temperature_outside']);
+        g6.refresh(data['temperature_electronics']);
+
     });
 
     // Our emergency brake function
@@ -55,8 +54,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
             value: 0,
             min: 0,
             max: 400,
-            title: "Temperature",
-            label: "°F",
+            title: "Velocity",
+            label: "mph",
             relativeGaugeSize: true,
             donut: false
         });
@@ -66,8 +65,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
             value: 0,
             min: 0,
             max: 400,
-            title: "Speed",
-            label: "mph",
+            title: "Acceleration",
+            label: "ft/s2",
             relativeGaugeSize: true,
             donut: false
         });
@@ -77,12 +76,48 @@ document.addEventListener("DOMContentLoaded", function(event) {
             value: 0,
             min: 0,
             max: 400,
-            title: "Position",
-            label: "ft",
+            title: "RPM",
+            label: "rpm",
             relativeGaugeSize: true,
             donut: false
         });
-    });
+    
+        g4 = new JustGage({
+            id: "g4",
+            value: 0,
+            min: 0,
+            max: 400,
+            title: "Inside Temperature",
+            label: "°F",
+            relativeGaugeSize: true,
+            donut: false
+        });
+
+        g5 = new JustGage({
+            id: "g5",
+            value: 0,
+            min: 0,
+            max: 400,
+            title: "Outside Temperature",
+            label: "°F",
+            relativeGaugeSize: true,
+            donut: false
+        });
+
+        g6 = new JustGage({
+            id: "g6",
+            value: 0,
+            min: 0,
+            max: 400,
+            title: "Electronics Temperature",
+            label: "°F",
+            relativeGaugeSize: true,
+            donut: false
+        });
+
+
+
+});
 
 </script>
 </head>
@@ -91,10 +126,20 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
 <body>
 
-<div class="wrapper clear">
+    <div class="col1">
         <div id="g1" class="gauge"></div>
         <div id="g2" class="gauge"></div>
         <div id="g3" class="gauge"></div>
+    </div>
+        
+    <div class="col3">
+        <div id="g4" class="gauge"></div>    
+        <div id="g5" class="gauge"></div>        
+        <div id="g6" class="gauge"></div>
+    </div>
+
+    <div class="col2">
+
     </div>
 
 

@@ -3,45 +3,26 @@ body {
         padding: 0px;
         margin: 0px;
     }
-    /* clearfix */
-
-    .clear:before,
-    .clear:after {
-        content: "";
-        display: table;
-    }
-
-    .clear:after {
-        clear: both;
-    }
-
-    .clear {
-        *zoom: 1;
-    }
-
-    .wrapper {
-        position: absolute;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
-        margin: 30px;
-        border: 1px solid #cccccc;
-    }
 
     .gauge {
         display: block;
+        width: 100%;
+    }
+
+    .col1 {
         float: left;
-    }
-
-    #g1 {
         width: 20%;
+        height: 100%;
     }
-
-    #g2 {
+    .col2 {
+        float: none;
         width: 60%;
+        height: 100%;
+        overflow: hidden;
+        display: table-cell;
     }
-
-    #g3 {
+    .col3 {
+        float: right;
         width: 20%;
+        height: 100%;
     }
