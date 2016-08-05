@@ -7,7 +7,6 @@ Install Python 2.7 and PIP (gevent-websocket does not fully support Python 3)
 ### Install required tools:
 ```
 pip install pyserial
-pip uninstall eventlet
 pip install Flask
 pip install flask-socketio
 pip install gevent
