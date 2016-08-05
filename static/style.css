@@ -1,0 +1,47 @@
+body {
+        text-align: center;
+        padding: 0px;
+        margin: 0px;
+    }
+    /* clearfix */
+
+    .clear:before,
+    .clear:after {
+        content: "";
+        display: table;
+    }
+
+    .clear:after {
+        clear: both;
+    }
+
+    .clear {
+        *zoom: 1;
+    }
+
+    .wrapper {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        margin: 30px;
+        border: 1px solid #cccccc;
+    }
+
+    .gauge {
+        display: block;
+        float: left;
+    }
+
+    #g1 {
+        width: 20%;
+    }
+
+    #g2 {
+        width: 60%;
+    }
+
+    #g3 {
+        width: 20%;
+    }

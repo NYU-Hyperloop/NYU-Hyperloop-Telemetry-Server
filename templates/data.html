@@ -1,18 +1,43 @@
-<script type="text/javascript" src="//code.jquery.com/jquery-latest.js"></script>
-<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
+<!DOCTYPE html>
+<html>
 
-<script type="text/javascript" charset="utf-8">
+<head>
+    <!-- TODO: Replace all online dependencies with local ones -->
+    <script type="text/javascript" src="//code.jquery.com/jquery-latest.js"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
+
+
+    <script src="/static/raphael-2.1.4.min.js"></script>
+    <script src="/static/justgage.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="/static/style.css">
+
+    <script type="text/javascript" charset="utf-8">
+
+    // Our gauges
+    var g1, g2, g3;
+
     // Here we connect to the server socket
     var socket = io.connect('https://' + document.domain + ':' + location.port);
     
     // Event triggered once successfully connected
     socket.on('connect', function() {
-        //socket.emit('hello', {data: 'I\'m connected!'});
+        $("#connection_status").text("Connected to pod!");
     });
 
+    // Event triggered once disconnected
+    socket.on('disconnect', function() {
+        $("#connection_status").text("Disconnected");
+    });
+
+    test_position = 0;
+
     // Event triggered when sensor data is received from the server
-    socket.on('sensor_data', function(message){
-        $('#data_1').text("Sensor 1 value: " + message);
+    socket.on('sensor_data', function(data){
+        g1.refresh(data['temperature_inside']);
+        g2.refresh(data['velocity']);
+        g3.refresh(test_position);
+        test_position += 1;
     });
 
     // Our emergency brake function
@@ -20,8 +45,59 @@
     {
         socket.emit('brake', {type: 'emergency'});
     }
-</script>
 
-<!-- The most terrible HTML you have seen. No CSS of course :P. -->
-<div id="data_1">Waiting for data...</div>
-<button onClick=emergencyBrake()>BRAKE NOW!</button>
+
+
+document.addEventListener("DOMContentLoaded", function(event) {
+
+        g1 = new JustGage({
+            id: "g1",
+            value: 0,
+            min: 0,
+            max: 400,
+            title: "Temperature",
+            label: "°F",
+            relativeGaugeSize: true,
+            donut: false
+        });
+
+        g2 = new JustGage({
+            id: "g2",
+            value: 0,
+            min: 0,
+            max: 400,
+            title: "Speed",
+            label: "mph",
+            relativeGaugeSize: true,
+            donut: false
+        });
+
+        g3 = new JustGage({
+            id: "g3",
+            value: 0,
+            min: 0,
+            max: 400,
+            title: "Position",
+            label: "ft",
+            relativeGaugeSize: true,
+            donut: false
+        });
+    });
+
+</script>
+</head>
+
+
+
+<body>
+
+<div class="wrapper clear">
+        <div id="g1" class="gauge"></div>
+        <div id="g2" class="gauge"></div>
+        <div id="g3" class="gauge"></div>
+    </div>
+
+
+</body>
+
+</html>
