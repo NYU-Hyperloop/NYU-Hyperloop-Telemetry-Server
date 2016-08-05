@@ -1,7 +1,11 @@
 from flask import Flask, render_template
 from flask_socketio import SocketIO, send, emit
+
+# Necessary to make standard library cooperate with gevent
 from gevent import monkey
 monkey.patch_all()
+
+import argparse
 import Queue
 import threading
 import time
@@ -10,12 +14,15 @@ import ssl
 import serial_device as serial
 import fakeserial
 
+# Toggle on if testing
+parser = argparse.ArgumentParser(description='Telemetry server')
+parser.add_argument('-t', action='store_true')
+args = parser.parse_args()
+
 # Serial input queue
 serial_queue = Queue.Queue()
 
-# Toggle on if testing
-TESTING = True
-if TESTING:
+if args.t:
     # A fake "Arduino" serial for testing purposes
     arduino_serial = fakeserial.Serial(serial_queue)
 else:
