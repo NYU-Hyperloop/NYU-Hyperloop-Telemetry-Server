@@ -2,12 +2,14 @@
 <html>
 
 <head>
+    <link rel="stylesheet" type="text/css" href="/static/style.css">
+    <link rel="stylesheet" type="text/css" href="/static/form-style.css">
+
     <script type="text/javascript" src="/static/jquery-3.1.0.min.js"></script>
     <script type="text/javascript" src="/static/socket.io.js"></script>
-    <script src="/static/raphael-2.1.4.min.js"></script>
-    <script src="/static/justgage.js"></script>
+    <script type="text/javascript" src="/static/raphael-2.1.4.min.js"></script>
+    <script type="text/javascript" src="/static/justgage.js"></script>
 
-    <link rel="stylesheet" type="text/css" href="/static/style.css">
 
     <script type="text/javascript" charset="utf-8">
 
@@ -43,6 +45,19 @@
     function emergencyBrake()
     {
         socket.emit('brake', {type: 'emergency'});
+    }
+
+    function movePod(direction)
+    {
+        if (direction == "up")
+        {
+            console.log('up');
+        }     
+        else if (direction == "down")
+        {
+            console.log('down');
+        }
+
     }
 
 
@@ -140,9 +155,64 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
     <div class="col2">
 
+<div class="form">
+      
+      <ul class="tab-group">
+        <li class="tab active"><a href="#automatic">Automatic</a></li>
+        <li class="tab"><a href="#manual">Manual</a></li>
+      </ul>
+      
+      <div class="tab-content">
+        <div id="automatic">      
+          <div class="top-row">
+            <div class="field-wrap">
+              <label>Speed</label>
+              <input type="number"/>
+            </div>
+        
+            <div class="field-wrap">
+              <label>Distance</label>
+              <input type="number"/>
+            </div>
+          </div>
+
+          <button class="button button-block"/>Launch Pod</button>
+
+          <button class="button button-block grey yellow"/>PRIMARY SYSTEM BRAKE</button>
+          <button class="button button-block grey red"/>AUTOMATIC AUX BRAKE</button>
+
+        </div>
+        
+        <div id="manual">
+            <!--Placeholder to keep width constant   -->
+            <div class="top-row">
+            <div class="field-wrap empty-wrap"><input disabled class="placeholder-input"/></div>       
+            <div class="field-wrap empty-wrap"><input disabled class="placeholder-input"/></div>
+            </div>
+            <!--Placeholder to keep width constant   -->
+            
+            <button class="button button-block"/>Enable Controls</button>
+          <BR><BR>
+            <div class="field-wrap">
+            <div id="arrow_up" class="arrow-up" onClick='movePod("up")'></div>
+          </div>
+          
+          <div class="field-wrap">
+            <div id="arrow_down" class="arrow-down" onClick='movePod("down")'></div>
+          </div>
+
+        </div>
+        
+      </div>
+      
+</div>
+
+
     </div>
 
 
 </body>
+    
+<script type="text/javascript" src="/static/form.js"></script>
 
 </html>
