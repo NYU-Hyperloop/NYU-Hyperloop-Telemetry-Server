@@ -14,8 +14,8 @@ import fakeserial
 
 # Suppress errors in order to ignore the SSLEOFError until we find a fix
 # WARNING: THIS IS BAD. Comment it out in order to see the errors.
-#f = open(os.devnull, 'w')
-#sys.stderr = f
+f = open(os.devnull, 'w')
+sys.stderr = f
 
 
 # Serial input queue
