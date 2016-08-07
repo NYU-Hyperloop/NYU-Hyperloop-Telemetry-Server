@@ -2,217 +2,295 @@
 <html>
 
 <head>
-    <link rel="stylesheet" type="text/css" href="/static/style.css">
-    <link rel="stylesheet" type="text/css" href="/static/form-style.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/style.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/form-style.css">
 
-    <script type="text/javascript" src="/static/jquery-3.1.0.min.js"></script>
-    <script type="text/javascript" src="/static/socket.io.js"></script>
-    <script type="text/javascript" src="/static/raphael-2.1.4.min.js"></script>
-    <script type="text/javascript" src="/static/justgage.js"></script>
+    <script type="text/javascript" src="/static/js/jquery-3.1.0.min.js"></script>
+    <script type="text/javascript" src="/static/js/socket.io.js"></script>
+    <script type="text/javascript" src="/static/js/raphael-2.1.4.min.js"></script>
+    <script type="text/javascript" src="/static/js/justgage.js"></script>
+    <script type="text/javascript" src="/static/js/d3.v3.min.js"></script>
+    <script type="text/javascript" src="/static/js/topojson.v1.min.js"></script>
 
 
     <script type="text/javascript" charset="utf-8">
+        // Our gauges
+        var g1, g2, g3, g4, g5, g6, g7, g8;
 
-    // Our gauges
-    var g1, g2, g3;
+        // Here we connect to the server socket
+        var socket = io.connect('https://' + document.domain + ':' + location.port);
 
-    // Here we connect to the server socket
-    var socket = io.connect('https://' + document.domain + ':' + location.port);
-    
-    // Event triggered once successfully connected
-    socket.on('connect', function() {
-        $("#connection_status").text("Connected to pod!");
-    });
+        // Event triggered once successfully connected
+        socket.on('connect', function() {
+            $("#connection_status").text("STATUS: Connected!");
+        });
 
-    // Event triggered once disconnected
-    socket.on('disconnect', function() {
-        $("#connection_status").text("Disconnected");
-    });
+        // Event triggered once disconnected
+        socket.on('disconnect', function() {
+            $("#connection_status").text("STATUS: Disconnected");
+        });
 
 
-    // Event triggered when sensor data is received from the server
-    socket.on('sensor_data', function(data){
-        g1.refresh(data['velocity']);
-        g2.refresh(data['acceleration']);
-        g3.refresh(data['rpm']);
-        g4.refresh(data['temperature_inside']);
-        g5.refresh(data['temperature_outside']);
-        g6.refresh(data['temperature_electronics']);
+        // Event triggered when sensor data is received from the server
+        socket.on('sensor_data', function(data) {
+            g1.refresh(data['velocity']);
+            g2.refresh(data['acceleration']);
+            g3.refresh(data['rpm']);
+            g4.refresh(data['temperature_inside']);
+            g5.refresh(data['temperature_outside']);
+            g6.refresh(data['temperature_electronics']);
+            g7.refresh(data['position']);
+            g8.refresh(data['time_remaining']);
 
-    });
+            rotate_sphere(data['yaw'], data['pitch'], data['roll']);
+        });
 
-    // Our emergency brake function
-    function emergencyBrake()
-    {
-        socket.emit('brake', {type: 'emergency'});
-    }
-
-    function movePod(direction)
-    {
-        if (direction == "up")
-        {
-            console.log('up');
-        }     
-        else if (direction == "down")
-        {
-            console.log('down');
+        // Our emergency brake function
+        function emergencyBrake() {
+            socket.emit('brake', {
+                type: 'emergency'
+            });
         }
 
-    }
+        function movePod(direction) {
+            if (direction == "up") {
+                console.log('up');
+            } else if (direction == "down") {
+                console.log('down');
+            }
+
+        }
 
 
 
-document.addEventListener("DOMContentLoaded", function(event) {
+        document.addEventListener("DOMContentLoaded", function(event) {
 
-        g1 = new JustGage({
-            id: "g1",
-            value: 0,
-            min: 0,
-            max: 400,
-            title: "Velocity",
-            label: "mph",
-            relativeGaugeSize: true,
-            donut: false
+            g1 = new JustGage({
+                id: "g1",
+                value: 0,
+                min: 0,
+                max: 150,
+                title: "Velocity",
+                label: "mph",
+                relativeGaugeSize: true,
+                donut: false
+            });
+
+            g2 = new JustGage({
+                id: "g2",
+                value: 0,
+                min: -50,
+                max: 50,
+                title: "Acceleration",
+                label: "ft/s2",
+                relativeGaugeSize: true,
+                donut: false
+            });
+
+            g3 = new JustGage({
+                id: "g3",
+                value: 0,
+                min: 0,
+                max: 5603,
+                title: "Rotations",
+                label: "rpm",
+                relativeGaugeSize: true,
+                donut: false
+            });
+
+            g4 = new JustGage({
+                id: "g4",
+                value: 0,
+                min: 0,
+                max: 150,
+                title: "Inside Temperature",
+                label: "°F",
+                relativeGaugeSize: true,
+                donut: false
+            });
+
+            g5 = new JustGage({
+                id: "g5",
+                value: 0,
+                min: 0,
+                max: 150,
+                title: "Outside Temperature",
+                label: "°F",
+                relativeGaugeSize: true,
+                donut: false
+            });
+
+            g6 = new JustGage({
+                id: "g6",
+                value: 0,
+                min: 0,
+                max: 150,
+                title: "Electronics Temperature",
+                label: "°F",
+                relativeGaugeSize: true,
+                donut: false
+            });
+
+            g7 = new JustGage({
+                id: "g7",
+                value: 0,
+                min: 0,
+                max: 5500,
+                title: "Position",
+                label: "ft",
+                relativeGaugeSize: true,
+                donut: false,
+                customSectors: [{
+                    color: "#1ab188",
+                    lo: 0,
+                    hi: 5500
+                }]
+            });
+
+            g8 = new JustGage({
+                id: "g8",
+                value: 0,
+                min: 0,
+                max: 65,
+                title: "Time Remaining",
+                label: "s",
+                relativeGaugeSize: true,
+                donut: false,
+                customSectors: [{
+                    color: "#1ab188",
+                    lo: 0,
+                    hi: 65
+                }]
+            });
+
         });
-
-        g2 = new JustGage({
-            id: "g2",
-            value: 0,
-            min: 0,
-            max: 400,
-            title: "Acceleration",
-            label: "ft/s2",
-            relativeGaugeSize: true,
-            donut: false
-        });
-
-        g3 = new JustGage({
-            id: "g3",
-            value: 0,
-            min: 0,
-            max: 400,
-            title: "RPM",
-            label: "rpm",
-            relativeGaugeSize: true,
-            donut: false
-        });
-    
-        g4 = new JustGage({
-            id: "g4",
-            value: 0,
-            min: 0,
-            max: 400,
-            title: "Inside Temperature",
-            label: "°F",
-            relativeGaugeSize: true,
-            donut: false
-        });
-
-        g5 = new JustGage({
-            id: "g5",
-            value: 0,
-            min: 0,
-            max: 400,
-            title: "Outside Temperature",
-            label: "°F",
-            relativeGaugeSize: true,
-            donut: false
-        });
-
-        g6 = new JustGage({
-            id: "g6",
-            value: 0,
-            min: 0,
-            max: 400,
-            title: "Electronics Temperature",
-            label: "°F",
-            relativeGaugeSize: true,
-            donut: false
-        });
-
-
-
-});
-
-</script>
+    </script>
 </head>
 
 
 
 <body>
 
+
+    <script>
+        var diameter = 180,
+            radius = diameter >> 1,
+            velocity = .01,
+            then = Date.now();
+
+        var projection = d3.geo.orthographic()
+            .scale(radius - 2)
+            .translate([radius, radius])
+            .clipAngle(90)
+            .precision(0);
+
+        var path = d3.geo.path()
+            .projection(projection);
+
+        function rotate_sphere(yaw, pitch, roll) {
+
+            d3.json("/static/json/world-110m.json", function(error, world) {
+                if (error) throw error;
+
+                var land = topojson.feature(world, world.objects.land);
+                var globe = {
+                    type: "Sphere"
+                };
+
+                var rotate_path = [yaw, pitch, roll];
+                var imu_canvas = document.getElementById("imu_canvas");
+                var context = imu_canvas.getContext("2d");
+                projection.rotate(rotate_path);
+                context.clearRect(0, 0, diameter, diameter);
+                context.fillStyle = "#1ab188";
+                context.strokeStyle = "#ffffff";
+                context.beginPath(), path.context(context)(land), context.fill();
+                context.beginPath(), path(globe), context.stroke();
+
+            });
+        }
+    </script>
+
+
+
     <div class="col1">
         <div id="g1" class="gauge"></div>
         <div id="g2" class="gauge"></div>
         <div id="g3" class="gauge"></div>
     </div>
-        
+
     <div class="col3">
-        <div id="g4" class="gauge"></div>    
-        <div id="g5" class="gauge"></div>        
+        <div id="g4" class="gauge"></div>
+        <div id="g5" class="gauge"></div>
         <div id="g6" class="gauge"></div>
     </div>
 
     <div class="col2">
 
-<div class="form">
-      
-      <ul class="tab-group">
-        <li class="tab active"><a href="#automatic">Automatic</a></li>
-        <li class="tab"><a href="#manual">Manual</a></li>
-      </ul>
-      
-      <div class="tab-content">
-        <div id="automatic">      
-          <div class="top-row">
-            <div class="field-wrap">
-              <label>Speed</label>
-              <input type="number"/>
-            </div>
-        
-            <div class="field-wrap">
-              <label>Distance</label>
-              <input type="number"/>
-            </div>
-          </div>
+        <div class="form">
+            <ul class="tab-group">
+                <li class="tab active"><a href="#automatic">Automatic</a></li>
+                <li class="tab"><a href="#manual">Manual</a></li>
+            </ul>
 
-          <button class="button button-block"/>Launch Pod</button>
+            <div class="tab-content">
+                <div id="automatic">
+                    <div class="top-row">
+                        <div class="field-wrap">
+                            <label>Speed</label>
+                            <input type="number" />
+                        </div>
 
-          <button class="button button-block grey yellow"/>PRIMARY SYSTEM BRAKE</button>
-          <button class="button button-block grey red"/>AUTOMATIC AUX BRAKE</button>
+                        <div class="field-wrap">
+                            <label>Distance</label>
+                            <input type="number" />
+                        </div>
+                    </div>
+
+                    <button class="button button-block" />Launch Pod</button>
+
+                    <button class="button button-block grey yellow" />PRIMARY SYSTEM BRAKE</button>
+                    <button class="button button-block grey red" />AUTOMATIC AUX BRAKE</button>
+
+                </div>
+
+                <div id="manual">
+                    <!--Placeholder to keep width constant   -->
+                    <div class="top-row">
+                        <div class="field-wrap empty-wrap"><input disabled class="placeholder-input" /></div>
+                        <div class="field-wrap empty-wrap"><input disabled class="placeholder-input" /></div>
+                    </div>
+                    <!--Placeholder to keep width constant   -->
+
+                    <button class="button button-block" />Enable Controls</button>
+                    <BR>
+                    <BR>
+                    <div class="field-wrap">
+                        <div id="arrow_up" class="arrow-up" onClick='movePod("up")'></div>
+                    </div>
+
+                    <div class="field-wrap">
+                        <div id="arrow_down" class="arrow-down" onClick='movePod("down")'></div>
+                    </div>
+
+                </div>
+
+            </div>
 
         </div>
-        
-        <div id="manual">
-            <!--Placeholder to keep width constant   -->
-            <div class="top-row">
-            <div class="field-wrap empty-wrap"><input disabled class="placeholder-input"/></div>       
-            <div class="field-wrap empty-wrap"><input disabled class="placeholder-input"/></div>
-            </div>
-            <!--Placeholder to keep width constant   -->
-            
-            <button class="button button-block"/>Enable Controls</button>
-          <BR><BR>
-            <div class="field-wrap">
-            <div id="arrow_up" class="arrow-up" onClick='movePod("up")'></div>
-          </div>
-          
-          <div class="field-wrap">
-            <div id="arrow_down" class="arrow-down" onClick='movePod("down")'></div>
-          </div>
 
+
+        <div class="bottom_panel">
+            <div id="g7" class="gauge_bottom_left"></div>
+            <canvas width="180" height="180" id="imu_canvas"></canvas>
+            <div id="g8" class="gauge_bottom_right"></div>
         </div>
-        
-      </div>
-      
-</div>
-
 
     </div>
 
 
 </body>
-    
-<script type="text/javascript" src="/static/form.js"></script>
+
+<script type="text/javascript" src="/static/js/form.js"></script>
 
 </html>

@@ -1,0 +1,46 @@
+body {
+    text-align: center;
+    padding: 0px;
+    margin: 0px;
+}
+
+.gauge {
+    display: block;
+    width: 100%;
+}
+
+.gauge_bottom_left {
+    display: block;
+    width: 33%;
+    float: left;
+}
+
+.gauge_bottom_right {
+    display: block;
+    width: 33%;
+    float: right;
+}
+
+.col1 {
+    float: left;
+    width: 20%;
+    height: 100%;
+}
+
+.col2 {
+    float: none;
+    width: 20%;
+    height: 100%;
+    overflow: hidden;
+    display: table-cell;
+}
+
+.col3 {
+    float: right;
+    width: 20%;
+    height: 100%;
+}
+
+canvas {
+    margin-top: 20px;
+}

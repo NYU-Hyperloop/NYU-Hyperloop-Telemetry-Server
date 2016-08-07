@@ -14,8 +14,8 @@ import fakeserial
 
 # Suppress errors in order to ignore the SSLEOFError until we find a fix
 # WARNING: THIS IS BAD. Comment it out in order to see the errors.
-f = open(os.devnull, 'w')
-sys.stderr = f
+#f = open(os.devnull, 'w')
+#sys.stderr = f
 
 
 # Serial input queue
@@ -50,6 +50,7 @@ def serve_data():
             socketio.emit('sensor_data', data_dict)
             print("SEND TO CLIENT:", data_dict)
         time.sleep(2)
+    thread.exit() # We want the thread to exit once the client disconnected
 
 # Default behavior on accessing the server
 @app.route('/')
@@ -68,6 +69,7 @@ def handle_connect_event():
     global clients
     clients += 1
     print('LOG: Client connected. Total: ' + str(clients))
+    time.sleep(2) # We need to give our thread enough time to exit. Otherwise, a page refresh keeps starting new threads.
     if not serving_data:
         serving_data = True
         arduino_thread = threading.Thread(target=arduino_serial.read, name='Arduino-Read-Thread')
