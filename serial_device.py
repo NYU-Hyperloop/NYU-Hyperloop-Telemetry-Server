@@ -1,24 +1,22 @@
-from ctypes import Structure, Union, c_char
+from ctypes import Structure, Union, c_char, sizeof
 import serial
 import time
 
 class DataStruct(Structure):
-    _fields_ = [('beginPad', c_char * 2),
-                ('data1',    c_char),
-                ('pad1',     c_char),
-                ('data2',    c_char),
-                ('pad2',     c_char)]
+    def __init__(self, fields):
+        _fields_ = fields
 
 class Data(Union):
-    _fields_ = [('sensorData', DataStruct),
-                ('myData',     c_char * 6)]
+    def __init__(self, fields):
+        _fields_ = [('sensorData', DataStruct(fields)),
+                    ('myData',     sizeof(DataStruct(fields)))]
 
 class Serial:
-    def __init__(self, data_queue, port='/dev/ttyACM0', baudrate=19200, timeout=1):
+    def __init__(self, data_queue, struct_fields, port='/dev/ttyACM0', baudrate=19200, timeout=1):
         self.serial_device = serial.Serial(port=port, baudrate=baudrate, timeout=timeout)
         self.PACKET_SIZE = 6
         self.BEGIN_PAD = [0x41, 0x42]
-        self.data = Data()
+        self.data = Data(struct_fields)
         self.serial_queue = data_queue
         self.sync()
 
