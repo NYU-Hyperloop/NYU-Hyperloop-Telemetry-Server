@@ -23,16 +23,12 @@ parser.add_argument('-t', action='store_true')
 parser.add_argument('-d', action='store_true')
 args = parser.parse_args()
 
-serverconfig = ServerConfig.ServerConfig('server.cfg')
+serverconfig = ServerConfig.ServerConfig('server.cfg', args.t)
 
 # Serial input queue
 serial_queue = Queue.Queue()
 
-if args.t:
-    # A fake "Arduino" serial for testing purposes
-    arduino_serial = fakeserial.Serial(serial_queue)
-else:
-    arduino_serial = serverconfig.Serial(serial_queue)
+arduino_serial = serverconfig.Serial(serial_queue)
 
 if args.d:
     app.debug = True
@@ -47,8 +43,8 @@ def serve_data():
     while True:
         reading = serial_queue.get()
         with app.test_request_context('/'):
-            socketio.emit('sensor_data', str(reading.data1))
-            print("SEND TO CLIENT:", str(reading.data1))
+            socketio.emit('sensor_data', str(reading.testsensor))
+            print("SEND TO CLIENT:", str(reading.testsensor))
         time.sleep(2)
 
 # Default behavior on accessing the server

@@ -1,14 +1,14 @@
-from ctypes import c_int, c_float
 import ConfigParser
-import serial_device as serial
-
-type_dict = {'int': c_int, 'float': c_float}
+import DataBuilder
+import fakeserial
+import serial_device
 
 class ServerConfig(ConfigParser.RawConfigParser, object):
-    def __init__(self, config_filename):
+    def __init__(self, config_filename, testing):
         super(ServerConfig, self).__init__()
         self.struct_fields = []
         self.read(config_filename)
+        self.testing = testing
         
         assert self.has_option('Flask', 'SECRET_KEY')
         assert self.has_option('SocketIO', 'host')
@@ -19,10 +19,9 @@ class ServerConfig(ConfigParser.RawConfigParser, object):
         assert self.has_option('Serial', 'port')
         assert self.has_option('Serial', 'baudrate')
         assert self.has_option('Serial', 'timeout')
-        assert self.has_section('Sensors')
+        assert self.has_option('Sensors', 'begin_pad')
 
-        for i,j in self.items('Sensors'):
-            self.struct_fields.append((i,type_dict[j]))
+        self.data = DataBuilder(self.get('Sensros', 'begin_pad'), self.get_sensors())
 
         self.host = self.get('SocketIO', 'host')
         self.port = int(self.get('SocketIO', 'port'))
@@ -32,7 +31,13 @@ class ServerConfig(ConfigParser.RawConfigParser, object):
 
 
     def Serial(self, data_queue):
-        return serial.Serial(data_queue, self.struct_fields, \
-                             self.get('Serial', 'port'), \
-                             int(self.get('Serial', 'baudrate')), \
-                             int(self.get('Serial', 'timeout')))
+        if self.testing:
+            return fakeserial.Serial(data_queue, self.data)
+        else:
+            return serial_device.Serial(data_queue, self.data, \
+                                       self.get('Serial', 'port'), \
+                                       int(self.get('Serial', 'baudrate')), \
+                                       int(self.get('Serial', 'timeout')))
+
+    def get_sensors(self):
+        return [(i,j) for i,j in self.items('Sensors') if i != 'begin_pad']
