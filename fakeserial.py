@@ -25,6 +25,7 @@ class Serial:
 
     def write(self, string):
         print("SEND TO ARDUINO:", string)
+        print('\n')
 
     def read(self):
         while True:

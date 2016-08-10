@@ -14,8 +14,8 @@ import fakeserial
 
 # Suppress errors in order to ignore the SSLEOFError until we find a fix
 # WARNING: THIS IS BAD. Comment it out in order to see the errors.
-f = open(os.devnull, 'w')
-sys.stderr = f
+#f = open(os.devnull, 'w')
+#sys.stderr = f
 
 
 # Serial input queue
@@ -24,7 +24,7 @@ serial_queue = Queue.Queue()
 # Toggle on if testing
 TESTING = True
 if TESTING:
-    # A fake "Arduino" serial for testing purposes
+    # A fake 'Arduino' serial for testing purposes
     arduino_serial = fakeserial.Serial(serial_queue)
 else:
     arduino_serial = serial.Serial(serial_queue)
@@ -34,7 +34,7 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'q-7g{D3(^T!t]e/y'
 
 # SocketIO configuration
-socketio = SocketIO(app, async_mode="gevent")
+socketio = SocketIO(app, async_mode='gevent')
 
 # We should keep track of our clients and only serve data once
 serving_data = False
@@ -48,19 +48,14 @@ def serve_data():
         with app.test_request_context('/'):
             data_dict = dict((field, getattr(reading, field)) for field, _ in reading._fields_)
             socketio.emit('sensor_data', data_dict)
-            print("SEND TO CLIENT:", data_dict)
+            print('SEND TO CLIENT:', data_dict)
+            print('\n')
         time.sleep(2)
-    thread.exit() # We want the thread to exit once the client disconnected
 
 # Default behavior on accessing the server
 @app.route('/')
 def index():
-    return render_template("data.html")
-
-# For testing/debugging purposes
-@app.route('/test')
-def test():
-    return render_template("RadialprogressTest.html")
+    return render_template('data.html')
 
 # Triggered when a client connects to the server
 @socketio.on('connect')
@@ -68,7 +63,7 @@ def handle_connect_event():
     global serving_data
     global clients
     clients += 1
-    print('LOG: Client connected. Total: ' + str(clients))
+    print('LOG: Client connected. Total: ' + str(clients) + '\n')
     time.sleep(2) # We need to give our thread enough time to exit. Otherwise, a page refresh keeps starting new threads.
     if not serving_data:
         serving_data = True
@@ -77,22 +72,21 @@ def handle_connect_event():
         arduino_thread.start()
         data_thread.start()
 
-
 # Triggered when a client disconnects from the server
 @socketio.on('disconnect')
 def handle_disconnect_event():
     global serving_data
     global clients
     clients -= 1
-    print('LOG: Client disconnected. Total: ' + str(clients))
+    print('LOG: Client disconnected. Total: ' + str(clients) + '\n')
     if clients == 0:
         serving_data = False
 
-# Triggered when the client sends the braking signal
-@socketio.on('brake')
-def handle_brake_event(message):
-    if message["type"] == 'emergency':
-        arduino_serial.write("Brake now!")
+# Triggered when the client sends a command
+@socketio.on('command')
+def handle_gui_command(command):
+    # TODO: Send the actual commands that Arduino would expect
+    arduino_serial.write(command);
 
 if __name__ == '__main__':
     # TODO: Current certificate and key are for testing purposes only
