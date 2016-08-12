@@ -1,4 +1,4 @@
-# NYU-Hyperloop-Telemetry-Server
+# Secure-Telemetry-Server
 A secure telemetry server between the pod and an off-site server
 
 ## Setting up the server
