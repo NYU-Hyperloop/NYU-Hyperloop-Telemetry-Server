@@ -43,8 +43,8 @@ def serve_data():
     while True:
         reading = serial_queue.get()
         with app.test_request_context('/'):
-            socketio.emit('sensor_data', str(reading.testsensor))
-            print("SEND TO CLIENT:", str(reading.testsensor))
+            socketio.emit('sensor_data', str(reading.int_sensor))
+            print("SEND TO CLIENT:", str(reading.int_sensor))
         time.sleep(2)
 
 # Default behavior on accessing the server

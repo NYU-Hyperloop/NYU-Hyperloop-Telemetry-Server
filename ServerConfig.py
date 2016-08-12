@@ -21,7 +21,7 @@ class ServerConfig(ConfigParser.RawConfigParser, object):
         assert self.has_option('Serial', 'timeout')
         assert self.has_option('Sensors', 'begin_pad')
 
-        self.data = DataBuilder(self.get('Sensros', 'begin_pad'), self.get_sensors())
+        self.data = DataBuilder.DataBuilder(self.get('Sensors', 'begin_pad'), self.get_sensors())
 
         self.host = self.get('SocketIO', 'host')
         self.port = int(self.get('SocketIO', 'port'))

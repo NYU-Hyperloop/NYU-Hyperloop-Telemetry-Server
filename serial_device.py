@@ -23,8 +23,10 @@ class Serial:
         return self.serial_queue.get()
 
     def sync(self):
+        print "Syncing..."
         while True:
             if self.serial_device.read(1) == self.BEGIN_PAD[0] \
                and self.serial_device.read(1) == self.BEGIN_PAD[1]:
                break 
+        print "Synced!"
         self.serial_device.read(self.PACKET_SIZE-len(self.BEGIN_PAD))

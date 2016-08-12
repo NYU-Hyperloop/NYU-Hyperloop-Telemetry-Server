@@ -12,14 +12,14 @@ class Data(Union):
                     ('myData',     c_byte * sizeof(DataStruct(fields)))]
 
 class DataBuilder:
-    def __init__(self, begin_pad, sensors):
-        self.begin_pad = [c_byte(int(i,16)) for i in begin_pad.split(',')]
+    def __init__(self, begin_pad_config, sensors):
+        self.begin_pad = [bytes(chr(int(i,16))) for i in begin_pad_config.split(',')]
         self.construct_fields(sensors)
         self.data = Data(self.struct_fields)
         self.packet_size = sizeof(self.data)
 
     def construct_fields(self, sensors):
         self.struct_fields = [('begin_pad', c_byte * len(self.begin_pad))]
-        for i,(_sensor, _type) in sensors:
+        for i,(_sensor, _type) in enumerate(sensors):
             self.struct_fields.append((_sensor, TYPE_DICT[_type]))
             self.struct_fields.append(('pad' + str(i), c_byte))
