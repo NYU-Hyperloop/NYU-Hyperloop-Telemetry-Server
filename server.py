@@ -12,7 +12,7 @@ import time
 import ssl
 
 import fakeserial
-import ServerConfig
+import serverconfig
 
 # Flask configuration
 app = Flask(__name__)
