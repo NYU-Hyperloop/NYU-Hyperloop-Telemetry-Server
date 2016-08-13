@@ -1,7 +1,7 @@
 import ConfigParser
-import DataBuilder
+import databuilder
 import fakeserial
-import serial_device
+import serialdevice
 
 class ServerConfig(ConfigParser.RawConfigParser, object):
     def __init__(self, config_filename, testing):
