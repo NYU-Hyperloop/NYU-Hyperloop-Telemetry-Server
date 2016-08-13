@@ -15,7 +15,9 @@ class Serial:
 
     def read(self):
         while True:
-            self.data.myData = serial_device.read(PACKET_SIZE)
+            self.data.myData = self.serial_device.read(self.PACKET_SIZE)
+            print self.data._fields_
+            print self.data.__dict__.keys()
             self.serial_queue.put(self.data.sensorData)
             time.sleep(.1)
 

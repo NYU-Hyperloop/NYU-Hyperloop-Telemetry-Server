@@ -42,6 +42,7 @@ socketio = SocketIO(app, async_mode="gevent")
 def serve_data():
     while True:
         reading = serial_queue.get()
+        print str(reading.int_sensor)
         with app.test_request_context('/'):
             socketio.emit('sensor_data', str(reading.int_sensor))
             print("SEND TO CLIENT:", str(reading.int_sensor))
