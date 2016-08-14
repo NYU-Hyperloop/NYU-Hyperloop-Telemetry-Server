@@ -8,7 +8,7 @@ const size_t DATA_BUFFER_SIZE = 10;
 union Data {
     struct DataStruct {
         byte beginPad[2]; // padding to easily find beginning
-        int data1;
+        long data1;
         byte pad1;
         float data2;
         byte pad2;
@@ -25,7 +25,7 @@ void setup()
     myData.sensorData.data1 = 500;
     myData.sensorData.pad1 = 0x43;
     myData.sensorData.data2 = 2016.08;
-    myData.sensorData.pad2 = 0x44;
+    myData.sensorData.pad2 = 0xA;
 
     // start serial
     Serial.begin(9600);
@@ -35,6 +35,7 @@ void setup()
 void loop()
 {
     // send the data buffer
+    myData.sensorData.data1 = random(300);
     Serial.write(myData.buffer, DATA_BUFFER_SIZE);
 
     // delay to give it time to send

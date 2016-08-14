@@ -23,7 +23,7 @@ parser.add_argument('-t', action='store_true')
 parser.add_argument('-d', action='store_true')
 args = parser.parse_args()
 
-serverconfig = ServerConfig.ServerConfig('server.cfg', args.t)
+serverconfig = serverconfig.ServerConfig('server.cfg', args.t)
 
 # Serial input queue
 serial_queue = Queue.Queue()
@@ -42,7 +42,6 @@ socketio = SocketIO(app, async_mode="gevent")
 def serve_data():
     while True:
         reading = serial_queue.get()
-        print str(reading.int_sensor)
         with app.test_request_context('/'):
             socketio.emit('sensor_data', str(reading.int_sensor))
             print("SEND TO CLIENT:", str(reading.int_sensor))

@@ -21,7 +21,7 @@ class ServerConfig(ConfigParser.RawConfigParser, object):
         assert self.has_option('Serial', 'timeout')
         assert self.has_option('Sensors', 'begin_pad')
 
-        self.data = DataBuilder.DataBuilder(self.get('Sensors', 'begin_pad'), self.get_sensors())
+        self.data = databuilder.DataBuilder(self.get('Sensors', 'begin_pad'), self.get_sensors())
 
         self.host = self.get('SocketIO', 'host')
         self.port = int(self.get('SocketIO', 'port'))
@@ -34,7 +34,7 @@ class ServerConfig(ConfigParser.RawConfigParser, object):
         if self.testing:
             return fakeserial.Serial(data_queue, self.data)
         else:
-            return serial_device.Serial(data_queue, self.data, \
+            return serialdevice.Serial(data_queue, self.data, \
                                        self.get('Serial', 'port'), \
                                        int(self.get('Serial', 'baudrate')), \
                                        int(self.get('Serial', 'timeout')))
