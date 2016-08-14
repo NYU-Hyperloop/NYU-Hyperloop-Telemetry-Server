@@ -10,12 +10,15 @@ import Queue
 import threading
 import time
 import ssl
+import os
+import sys
 
 import fakeserial
 import serverconfig
 
 # Flask configuration
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'q-7g{D3(^T!t]e/y'
 
 # Toggle on if testing
 parser = argparse.ArgumentParser(description='Telemetry server')
@@ -25,6 +28,12 @@ args = parser.parse_args()
 
 serverconfig = serverconfig.ServerConfig('server.cfg', args.t)
 
+# Suppress errors in order to ignore the SSLEOFError until we find a fix
+# WARNING: THIS IS BAD. Comment it out in order to see the errors.
+#f = open(os.devnull, 'w')
+#sys.stderr = f
+
+
 # Serial input queue
 serial_queue = Queue.Queue()
 
@@ -33,46 +42,60 @@ arduino_serial = serverconfig.Serial(serial_queue)
 if args.d:
     app.debug = True
 
-app.config['SECRET_KEY'] = serverconfig.get('Flask', 'SECRET_KEY')
-
 # SocketIO configuration
-socketio = SocketIO(app, async_mode="gevent")
+socketio = SocketIO(app, async_mode='gevent')
+
+# We should keep track of our clients and only serve data once
+serving_data = False
+clients = 0
 
 # Function that reads data from our serial input in a separate thread
 def serve_data():
-    while True:
+    global serving_data
+    while serving_data:
         reading = serial_queue.get()
         with app.test_request_context('/'):
-            socketio.emit('sensor_data', str(reading.int_sensor))
-            print("SEND TO CLIENT:", str(reading.int_sensor))
+            data_dict = dict((field, getattr(reading, field)) for field, _ in reading._fields_)
+            socketio.emit('sensor_data', data_dict)
+            print('SEND TO CLIENT:', data_dict)
+            print('\n')
         time.sleep(2)
 
 # Default behavior on accessing the server
 @app.route('/')
 def index():
-    return render_template("data.html")
+    return render_template('data.html')
 
 # Triggered when a client connects to the server
 @socketio.on('connect')
 def handle_connect_event():
-    print('Client connected')
-    arduino_thread = threading.Thread(target=arduino_serial.read, name='Arduino-Read-Thread')
-    data_thread = threading.Thread(target=serve_data, name='Data-Server-Thread')
-    arduino_thread.daemon = True
-    arduino_thread.start()
-    data_thread.daemon = True
-    data_thread.start()
+    global serving_data
+    global clients
+    clients += 1
+    print('LOG: Client connected. Total: ' + str(clients) + '\n')
+    time.sleep(2) # We need to give our thread enough time to exit. Otherwise, a page refresh keeps starting new threads.
+    if not serving_data:
+        serving_data = True
+        arduino_thread = threading.Thread(target=arduino_serial.read, name='Arduino-Read-Thread')
+        data_thread = threading.Thread(target=serve_data, name='Data-Server-Thread')
+        arduino_thread.start()
+        data_thread.start()
 
 # Triggered when a client disconnects from the server
 @socketio.on('disconnect')
 def handle_disconnect_event():
-    print('Client disconnected')
+    global serving_data
+    global clients
+    clients -= 1
+    print('LOG: Client disconnected. Total: ' + str(clients) + '\n')
+    if clients == 0:
+        serving_data = False
 
-# Triggered when the client sends the braking signal
-@socketio.on('brake')
-def handle_brake_event(message):
-    if message["type"] == 'emergency':
-        arduino_serial.write("Brake now!")
+# Triggered when the client sends a command
+@socketio.on('command')
+def handle_gui_command(command):
+    # TODO: Send the actual commands that Arduino would expect
+    arduino_serial.write(command);
 
 if __name__ == '__main__':
     # TODO: Current certificate and key are for testing purposes only
@@ -84,3 +107,4 @@ if __name__ == '__main__':
 
     while True:
         time.sleep(1)
+

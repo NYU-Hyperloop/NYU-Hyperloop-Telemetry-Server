@@ -6,7 +6,6 @@ import serialdevice
 class ServerConfig(ConfigParser.RawConfigParser, object):
     def __init__(self, config_filename, testing):
         super(ServerConfig, self).__init__()
-        self.struct_fields = []
         self.read(config_filename)
         self.testing = testing
         
@@ -32,7 +31,7 @@ class ServerConfig(ConfigParser.RawConfigParser, object):
 
     def Serial(self, data_queue):
         if self.testing:
-            return fakeserial.Serial(data_queue, self.data)
+            return fakeserial.Serial(data_queue)
         else:
             return serialdevice.Serial(data_queue, self.data, \
                                        self.get('Serial', 'port'), \

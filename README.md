@@ -1,4 +1,4 @@
-# NYU-Hyperloop-Telemetry-Server
+# Secure-Telemetry-Server
 A secure telemetry server between the pod and an off-site server
 
 ## Setting up the server
@@ -16,6 +16,7 @@ pip install gevent-websocket
 Install `ssl/client/client.p12` on your OS or internet browser. Current password: `loop`.
 
 ## Running the server
+**Do not run it using the `flask run` command. Use the following one instead:**
 ```
 python server.py
 ```
