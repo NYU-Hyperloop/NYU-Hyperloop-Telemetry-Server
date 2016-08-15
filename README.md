@@ -27,8 +27,8 @@ cd ssl
 ./configure.sh
 ```
 ### Getting the browser to recognize the Certification Authority (Obtaining 'Green Lock')
-- Tutorial designed for Google Chrome
-<!-- -->
+Tutorial designed for Google Chrome
+
 1. Navigate to <https://localhost:8443>.
 2. Click on the broken lock in the URL bar -> Details -> View Certificate
 3. Go to Certification Path and find the untrusted certificate (should be the root) -> View Certificate
