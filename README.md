@@ -28,11 +28,12 @@ cd ssl
 ```
 ### Getting the browser to recognize the Certification Authority (Obtaining 'Green Lock')
 - Tutorial designed for Google Chrome
+<!-- -->
 1. Navigate to <https://localhost:8443>.
 2. Click on the broken lock in the URL bar -> Details -> View Certificate
 3. Go to Certification Path and find the untrusted certificate (should be the root) -> View Certificate
 4. Go to Details -> Copy to File -> export as a P7B and choose the location
 5. Install the P7B
-..* Go to chrome://settings -> Advanced -> HTTPS/SSL -> Manage Certificates
-..* Import the P7B file under Trusted Root Certification Authority
-..* Restart the browser
+  * Go to chrome://settings -> Advanced -> HTTPS/SSL -> Manage Certificates
+  * Import the P7B file under Trusted Root Certification Authority
+  * Restart the browser
