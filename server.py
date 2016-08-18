@@ -8,6 +8,7 @@ import time
 import ssl
 import os
 import sys
+from datetime import datetime
 
 import serial_device as serial
 import fakeserial
@@ -40,6 +41,18 @@ socketio = SocketIO(app, async_mode='gevent')
 serving_data = False
 clients = 0
 
+# Keep track of different runs
+pod_runs = 0
+server_start_time = datetime.now()
+run_start_time = datetime.now()
+logged_sensors = ["velocity","acceleration","rpm_scaled","temperature_inside","temperature_outside","temperature_electronics","blank"]
+logging_sensor_data = False
+for s in logged_sensors:
+    f = open('static/data/' + str(s) + ".csv",'w')
+    f.write('sensor,time,value\n')
+    f.close()
+logged_sensors.pop()
+
 # Function that reads data from our serial input in a separate thread
 def serve_data():
     global serving_data
@@ -50,7 +63,45 @@ def serve_data():
             socketio.emit('sensor_data', data_dict)
             print('SEND TO CLIENT:', data_dict)
             print('\n')
+            sensor_log('update',data_dict)
         time.sleep(2)
+
+# Logging function for sensor data
+def sensor_log(cmd, data):
+    global pod_runs
+    global logging_sensor_data
+    global logged_sensors
+    global run_start_time
+
+    if cmd == 'start':
+        pod_runs += 1
+        f = open('static/data/run_' + str(pod_runs) + ".csv",'w')
+        f.write('sensor,time,value\n')
+        f.close()
+        run_start_time = datetime.now()
+        logging_sensor_data = True
+        socketio.emit('log_update', {'pod_runs':pod_runs,'sensors':logged_sensors})
+
+    elif cmd == 'update' and logging_sensor_data:
+        time_crt = datetime.strftime(datetime.now(), '%H:%M:%S')
+        time_passed = datetime.strftime(server_start_time + (datetime.now() - run_start_time), '%H:%M:%S')
+
+        f = open('static/data/run_' + str(pod_runs) + ".csv", 'a')
+        data['rpm_scaled'] = data['rpm'] / 100
+
+        for s in logged_sensors:
+            f.write(s + ',' + str(time_crt) + ',' + str(data[s]) + '\n')
+        f.close()
+
+        for s in logged_sensors:
+            f = open('static/data/' + str(s) + ".csv",'a')
+            f.write('run_' + str(pod_runs) + ',' + str(time_passed) + ',' + str(data[s]) + '\n')
+            f.close()
+
+
+        if data['velocity'] <= 0:
+            logging_sensor_data = False
+
 
 # Default behavior on accessing the server
 @app.route('/')
@@ -87,6 +138,9 @@ def handle_disconnect_event():
 def handle_gui_command(command):
     # TODO: Send the actual commands that Arduino would expect
     arduino_serial.write(command);
+
+    if command['cmd'] == 'launch_pod':
+        sensor_log('start', '')
 
 if __name__ == '__main__':
     # TODO: Current certificate and key are for testing purposes only

@@ -28,6 +28,35 @@
         // Event triggered once disconnected
         socket.on('disconnect', function() {});
 
+        // Event triggered once disconnected
+        socket.on('log_update', function(data) {
+            var pod_runs = data['pod_runs'];
+            var selector = document.getElementById('graph_picker');
+            selector.options.length = 0;
+
+            var group = document.getElementById('graph_picker_none');
+            var option = document.createElement("option");
+            option.value = "blank";
+            option.text = "No graph selected";
+            group.appendChild(option);
+
+            var group = document.getElementById('graph_picker_runs');
+            for (var i = 1; i <= pod_runs; i++) {
+                var option = document.createElement("option");
+                option.value = "run_" + i.toString();
+                option.text = "Run " + i.toString();
+                group.appendChild(option);
+            }
+
+            var group = document.getElementById('graph_picker_sensors');
+            for (var s in data['sensors']) {
+                var option = document.createElement("option");
+                option.value = data['sensors'][s];
+                option.text = data['sensors'][s];
+                group.appendChild(option);
+            }
+        });
+
 
         // Event triggered when sensor data is received from the server
         socket.on('sensor_data', function(data) {
@@ -76,6 +105,20 @@
                 cmd: 'manual_controls',
                 state: state
             });
+        }
+
+        // Function to display graph popup
+        function showGraphPopup() {
+            $('#graph_popup').popup('show');
+        }
+
+        // Function to display graph
+        function showGraph() {
+            var random_id = Math.random();
+            var selector = document.getElementById('graph_picker');
+            var filename = selector.options[selector.selectedIndex].value;
+            var random_id = Math.random();
+            update_blackbox_data("/static/data/" + filename + ".csv?nocache=" + random_id);
         }
 
 
@@ -262,7 +305,7 @@
                         <div id="arrow_down" class="arrow-down" onClick='movePod("down")'></div>
                     </div>
 
-                    <button class="button button-block grey" onClick="$('#graph_popup').popup('show');" />Pod Black Box</button>
+                    <button class="button button-block grey" onClick="showGraphPopup()" />Pod Black Box</button>
 
                 </div>
 
@@ -274,6 +317,14 @@
 
     <!-- Popup to display the sensor graph -->
     <div id="graph_popup">
+        <div id="graph_controls">
+            <select id="graph_picker" onchange="showGraph()">
+                <optgroup id="graph_picker_none" label="Select a Graph"></optgroup>
+                <optgroup id="graph_picker_runs" label="Runs"></optgroup>
+                <optgroup id="graph_picker_sensors" label="Sensors"></optgroup>
+            </select>
+            <a class='close-btn' onclick="$('#graph_popup').popup('hide');"></a>
+        </div>
         <svg id="graph"></svg>
     </div>
 
