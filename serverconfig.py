@@ -22,6 +22,7 @@ class ServerConfig(ConfigParser.RawConfigParser, object):
 
         self.data = databuilder.DataBuilder(self.get('Sensors', 'begin_pad'), self.get_sensors())
 
+        self.secret_key = self.get('Flask', 'SECRET_KEY')
         self.host = self.get('SocketIO', 'host')
         self.port = int(self.get('SocketIO', 'port'))
         self.certfile = self.get('SocketIO', 'certfile')
