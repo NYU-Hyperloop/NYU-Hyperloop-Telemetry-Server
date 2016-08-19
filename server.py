@@ -53,7 +53,7 @@ clients = 0
 pod_runs = 0
 server_start_time = datetime.now()
 run_start_time = datetime.now()
-logged_sensors = ["velocity","acceleration","rpm_scaled","temperature_inside","temperature_outside","temperature_electronics","blank"]
+logged_sensors = serverconfig.logged_sensors
 logging_sensor_data = False
 for s in logged_sensors:
     f = open('static/data/' + str(s) + ".csv",'w')
