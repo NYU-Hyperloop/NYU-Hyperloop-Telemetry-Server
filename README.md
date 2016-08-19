@@ -6,34 +6,34 @@ Install Python 2.7 and PIP (gevent-websocket does not fully support Python 3)
 
 ### Install required tools:
 ```
-pip install pyserial
-pip install Flask
-pip install flask-socketio
-pip install gevent
-pip install gevent-websocket
+pip install pyserial Flask flask-socketio gevent gevent-websocket
 ```
-### Install Client Certificate
-Install `ssl/client/client.p12` on your OS or internet browser. Current password: `loop`.
+### Configure SSL connection
+- Install `ssl/client/client.p12` on your OS or internet browser. Development password: `loop`.
+- Install `ssl/client/greenlock.p7b` as a **Trusted Root Certification Authority** on your OS or internet browser.
 
 ## Running the server
 **Do not run it using the `flask run` command. Use the following one instead:**
 ```
 python server.py
 ```
-The server runs at <https://127.0.0.1:8443>. 
+The server runs at <https://localhost:8443>.
+**If accessed via 127.0.0.1, there will be a domain mismatch with the SSL certificate.**
 
 ## (Extras) (Not needed when testing server)
+### Generating the SSL Certification Authority, Server Certificate and Client Certificate
+```
+cd ssl
+./configure.sh
+```
+### Getting the browser to recognize the Certification Authority (Obtaining 'Green Lock')
+Tutorial designed for Google Chrome
 
-### Generating the SSL CA, Server Certificate and Client Certificate
-```
-sudo apt-get install openssl
-openssl req -newkey rsa:4096 -keyform PEM -keyout ca.key -x509 -days 3650 -outform PEM -out ca.cer
-openssl genrsa -out server.key 4096
-openssl req -new -key server.key -out server.req -sha256
-openssl x509 -req -in server.req -CA ca.cer -CAkey ca.key -set_serial 100 -extensions server -days 1460 -outform PEM -out server.cer -sha256
-openssl genrsa -out client.key 4096
-openssl req -new -key client.key -out client.req
-openssl x509 -req -in client.req -CA ca.cer -CAkey ca.key -set_serial 101 -extensions client -days 365 -outform PEM -out client.cer
-openssl pkcs12 -export -inkey client.key -in client.cer -out client.p12
-rm server.req client.key client.cer client.req
-```
+1. Navigate to <https://localhost:8443>.
+2. Click on the broken lock in the URL bar -> Details -> View Certificate
+3. Go to Certification Path and find the untrusted certificate (should be the root) -> View Certificate
+4. Go to Details -> Copy to File -> export as a P7B and choose the location
+5. Install the P7B
+  * Go to chrome://settings -> Advanced -> HTTPS/SSL -> Manage Certificates
+  * Import the P7B file under Trusted Root Certification Authority
+  * Restart the browser

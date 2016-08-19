@@ -16,10 +16,6 @@ import sys
 import fakeserial
 import serverconfig
 
-# Flask configuration
-app = Flask(__name__)
-app.config['SECRET_KEY'] = 'q-7g{D3(^T!t]e/y'
-
 # Toggle on if testing
 parser = argparse.ArgumentParser(description='Telemetry server')
 parser.add_argument('-t', action='store_true')
@@ -33,6 +29,9 @@ serverconfig = serverconfig.ServerConfig('server.cfg', args.t)
 #f = open(os.devnull, 'w')
 #sys.stderr = f
 
+# Flask configuration
+app = Flask(__name__)
+app.config['SECRET_KEY'] = serverconfig.secret_key
 
 # Serial input queue
 serial_queue = Queue.Queue()
