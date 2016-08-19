@@ -55,9 +55,8 @@ def serve_data():
     while serving_data:
         reading = serial_queue.get()
         with app.test_request_context('/'):
-            data_dict = dict((field, getattr(reading, field)) for field, _ in reading._fields_)
-            socketio.emit('sensor_data', data_dict)
-            print('SEND TO CLIENT:', data_dict)
+            socketio.emit('sensor_data', reading)
+            print('SEND TO CLIENT:', reading)
             print('\n')
         time.sleep(2)
 

@@ -14,16 +14,17 @@ class DataBuilder:
         self.construct_fields(sensors)
 
         DataStruct._fields_ = self.struct_fields
-        self.packet_size = sizeof(DataStruct)
 
-        Data._fields_ = [('sensorData', DataStruct),
-                         ('myData',     c_byte * self.packet_size)]
+        Data._fields_ = [('sensor_data', DataStruct),
+                         ('data_buffer',     c_byte * self.packet_size)]
 
         self.data = Data()
-        self.data.sensorData = DataStruct()
+        self.data.sensor_data = DataStruct()
 
     def construct_fields(self, sensors):
-        self.struct_fields = [('beginPad', c_byte * len(self.begin_pad))]
+        self.struct_fields = [('begin_pad', c_byte * len(self.begin_pad))]
+        self.packet_size = len(self.begin_pad)
         for i,(_sensor, _type) in enumerate(sensors):
+            assert(_type in TYPE_DICT.keys())
             self.struct_fields.append((_sensor, TYPE_DICT[_type]))
-            self.struct_fields.append(('pad' + str(i), c_byte))
+            self.packet_size += 4
