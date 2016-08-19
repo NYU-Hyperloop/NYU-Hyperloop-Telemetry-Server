@@ -41,8 +41,12 @@ class Serial:
             self.data_struct.temperature_electronics = random.uniform(0,150)
             self.data_struct.time_remaining = random.randint(0,65)
 
-            self.serial_queue.put(self.data_struct)
+            self.serialize_and_put()
             time.sleep(.1)
 
     def readline(self):
         return self.serial_queue.get()
+
+    def serialize_and_put(self):
+        self.serial_queue.put(dict((field, getattr(self.data_struct, field)) \
+            for field, _ in self.data_struct._fields_ if (field != 'begin_pad')))

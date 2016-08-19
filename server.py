@@ -1,7 +1,11 @@
 from flask import Flask, render_template
 from flask_socketio import SocketIO, send, emit
+
+# Necessary to make standard library cooperate with gevent
 from gevent import monkey
 monkey.patch_all()
+
+import argparse
 import Queue
 import threading
 import time
@@ -10,8 +14,20 @@ import os
 import sys
 from datetime import datetime
 
-import serial_device as serial
 import fakeserial
+import serverconfig
+
+# Flask configuration
+app = Flask(__name__)
+app.config['SECRET_KEY'] = 'q-7g{D3(^T!t]e/y'
+
+# Toggle on if testing
+parser = argparse.ArgumentParser(description='Telemetry server')
+parser.add_argument('-t', action='store_true')
+parser.add_argument('-d', action='store_true')
+args = parser.parse_args()
+
+serverconfig = serverconfig.ServerConfig('server.cfg', args.t)
 
 # Suppress errors in order to ignore the SSLEOFError until we find a fix
 # WARNING: THIS IS BAD. Comment it out in order to see the errors.
@@ -22,17 +38,10 @@ import fakeserial
 # Serial input queue
 serial_queue = Queue.Queue()
 
-# Toggle on if testing
-TESTING = True
-if TESTING:
-    # A fake 'Arduino' serial for testing purposes
-    arduino_serial = fakeserial.Serial(serial_queue)
-else:
-    arduino_serial = serial.Serial(serial_queue)
+arduino_serial = serverconfig.Serial(serial_queue)
 
-# Flask configuration
-app = Flask(__name__)
-app.config['SECRET_KEY'] = 'q-7g{D3(^T!t]e/y'
+if args.d:
+    app.debug = True
 
 # SocketIO configuration
 socketio = SocketIO(app, async_mode='gevent')
@@ -59,9 +68,8 @@ def serve_data():
     while serving_data:
         reading = serial_queue.get()
         with app.test_request_context('/'):
-            data_dict = dict((field, getattr(reading, field)) for field, _ in reading._fields_)
-            socketio.emit('sensor_data', data_dict)
-            print('SEND TO CLIENT:', data_dict)
+            socketio.emit('sensor_data', reading)
+            print('SEND TO CLIENT:', reading)
             print('\n')
             sensor_log('update',data_dict)
         time.sleep(2)
@@ -144,11 +152,11 @@ def handle_gui_command(command):
 
 if __name__ == '__main__':
     # TODO: Current certificate and key are for testing purposes only
-    socketio.run(app, host='127.0.0.1', port=8443, 
-                        certfile='ssl/server/server.cer', keyfile='ssl/server/server.key', 
-                        ca_certs='ssl/server/ca.cer', 
-                        cert_reqs=ssl.CERT_REQUIRED,
-                        ssl_version=ssl.PROTOCOL_TLSv1_2) 
+    socketio.run(app, host=serverconfig.host, port=serverconfig.port,
+                      certfile=serverconfig.certfile, keyfile=serverconfig.keyfile,
+                      ca_certs=serverconfig.ca_certs,
+                      cert_reqs=ssl.CERT_REQUIRED,
+                      ssl_version=ssl.PROTOCOL_TLSv1_2) 
 
     while True:
         time.sleep(1)
