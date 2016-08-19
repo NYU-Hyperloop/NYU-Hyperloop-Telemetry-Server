@@ -1,5 +1,5 @@
 # Secure-Telemetry-Server
-A secure telemetry server between the pod and an off-site server
+A secure telemetry server for sending data and receiving commands from the pod to an off-site client
 
 ## Setting up the server
 Install Python 2.7 and PIP (gevent-websocket does not fully support Python 3)
