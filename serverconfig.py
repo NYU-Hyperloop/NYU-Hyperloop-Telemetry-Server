@@ -19,6 +19,7 @@ class ServerConfig(ConfigParser.RawConfigParser, object):
         assert self.has_option('Serial', 'baudrate')
         assert self.has_option('Serial', 'timeout')
         assert self.has_option('Sensors', 'begin_pad')
+        assert self.has_option('Logging', 'sensors')
 
         self.data = databuilder.DataBuilder(self.get('Sensors', 'begin_pad'), self.get_sensors())
 
@@ -28,7 +29,8 @@ class ServerConfig(ConfigParser.RawConfigParser, object):
         self.certfile = self.get('SocketIO', 'certfile')
         self.keyfile = self.get('SocketIO', 'keyfile')
         self.ca_certs = self.get('SocketIO', 'ca_certs')
-
+        
+        self.logged_sensors = self.get_logged_sensors()
 
     def Serial(self, data_queue):
         if self.testing:
@@ -41,3 +43,6 @@ class ServerConfig(ConfigParser.RawConfigParser, object):
 
     def get_sensors(self):
         return [(i,j) for i,j in self.items('Sensors') if i != 'begin_pad']
+
+    def get_logged_sensors(self):
+        return [j for i,j in self.items('Logging') if 'sensor_' in i]
