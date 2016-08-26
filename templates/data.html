@@ -17,6 +17,8 @@
     <script type="text/javascript" src="/static/js/topojson.v1.min.js"></script>
     <script type="text/javascript" src="/static/js/jquery.popupoverlay.js"></script>
 
+    <script type="text/javascript" src="/static/js/utilities.js"></script>
+
 
 
     <script type="text/javascript" charset="utf-8">
@@ -27,38 +29,19 @@
         var socket = io.connect('https://' + document.domain + ':' + location.port);
 
         // Event triggered once successfully connected
-        socket.on('connect', function() {});
+        socket.on('connect', function() {
+            update_option_names({
+                'pod_runs': [],
+                'sensors': []
+            });
+        });
 
         // Event triggered once disconnected
         socket.on('disconnect', function() {});
 
         // Event triggered once disconnected
         socket.on('log_update', function(data) {
-            var pod_runs = data['pod_runs'];
-            var selector = document.getElementById('graph_picker');
-            selector.options.length = 0;
-
-            var group = document.getElementById('graph_picker_none');
-            var option = document.createElement("option");
-            option.value = "blank";
-            option.text = "No graph selected";
-            group.appendChild(option);
-
-            var group = document.getElementById('graph_picker_runs');
-            for (var i = 1; i <= pod_runs; i++) {
-                var option = document.createElement("option");
-                option.value = "run_" + i.toString();
-                option.text = "Run " + i.toString();
-                group.appendChild(option);
-            }
-
-            var group = document.getElementById('graph_picker_sensors');
-            for (var s in data['sensors']) {
-                var option = document.createElement("option");
-                option.value = data['sensors'][s];
-                option.text = data['sensors'][s];
-                group.appendChild(option);
-            }
+            update_option_names(data);
         });
 
 
@@ -78,7 +61,7 @@
 
         // Our brake function
         function brake(type) {
-            socket.emit('command', {
+            socket.emit('arduino_command', {
                 cmd: 'brake',
                 type: type
             });
@@ -86,7 +69,7 @@
 
         // Function to move pod manually
         function movePod(direction) {
-            socket.emit('command', {
+            socket.emit('arduino_command', {
                 cmd: 'move_pod',
                 direction: direction
             });
@@ -96,7 +79,7 @@
         function launchPod() {
             var speed = document.getElementById('speed_input').value;
             var distance = document.getElementById('distance_input').value;
-            socket.emit('command', {
+            socket.emit('arduino_command', {
                 cmd: 'launch_pod',
                 speed: speed,
                 distance: distance
@@ -105,7 +88,7 @@
 
         // Function to enable manual controls
         function manualControls(state) {
-            socket.emit('command', {
+            socket.emit('arduino_command', {
                 cmd: 'manual_controls',
                 state: state
             });
@@ -122,7 +105,7 @@
             var selector = document.getElementById('graph_picker');
             var filename = selector.options[selector.selectedIndex].value;
             var random_id = Math.random();
-            update_blackbox_data("/static/data/" + filename + ".csv?nocache=" + random_id);
+            update_blackbox_data("/static/logs/" + filename + ".csv?nocache=" + random_id);
         }
 
 
@@ -178,7 +161,8 @@
                 title: "Inside Temperature",
                 label: "°F",
                 relativeGaugeSize: true,
-                donut: false
+                donut: false,
+                gaugeWidthScale: 0.3
             });
 
             g5 = new JustGage({
@@ -189,7 +173,8 @@
                 title: "Outside Temperature",
                 label: "°F",
                 relativeGaugeSize: true,
-                donut: false
+                donut: false,
+                gaugeWidthScale: 0.3
             });
 
             g6 = new JustGage({
@@ -200,7 +185,8 @@
                 title: "Electronics Temperature",
                 label: "°F",
                 relativeGaugeSize: true,
-                donut: false
+                donut: false,
+                gaugeWidthScale: 0.3
             });
 
             g7 = new JustGage({
@@ -211,12 +197,13 @@
                 title: "Position",
                 label: "ft",
                 relativeGaugeSize: true,
-                donut: false,
+                donut: true,
                 customSectors: [{
                     color: "#1ab188",
                     lo: 0,
                     hi: 5500
-                }]
+                }],
+                gaugeWidthScale: 0.5
             });
 
             g8 = new JustGage({
@@ -227,12 +214,13 @@
                 title: "Time Remaining",
                 label: "s",
                 relativeGaugeSize: true,
-                donut: false,
+                donut: true,
                 customSectors: [{
                     color: "#1ab188",
                     lo: 0,
                     hi: 65
-                }]
+                }],
+                gaugeWidthScale: 0.5
             });
 
         });
@@ -327,6 +315,7 @@
                 <optgroup id="graph_picker_runs" label="Runs"></optgroup>
                 <optgroup id="graph_picker_sensors" label="Sensors"></optgroup>
             </select>
+            <button class="graph_extra_btn" onclick="deleteGraph()">DELETE</button>
             <a class='close-btn' onclick="$('#graph_popup').popup('hide');"></a>
         </div>
         <svg id="graph"></svg>

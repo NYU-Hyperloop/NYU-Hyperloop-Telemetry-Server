@@ -55,10 +55,15 @@ server_start_time = datetime.now()
 run_start_time = datetime.now()
 logged_sensors = serverconfig.logged_sensors
 logging_sensor_data = False
+current_run_name = ''
+output_files = {}
+run_names = []
+deleted_runs = []
+
 for s in logged_sensors:
-    f = open('static/data/' + str(s) + ".csv",'w')
+    f = open('static/logs/' + str(s) + ".csv",'w')
     f.write('sensor,time,value\n')
-    f.close()
+    output_files[s] = f
 logged_sensors.pop()
 
 # Function that reads data from our serial input in a separate thread
@@ -79,35 +84,69 @@ def sensor_log(cmd, data):
     global logging_sensor_data
     global logged_sensors
     global run_start_time
+    global output_files
+    global current_run_name
+    global run_names
 
     if cmd == 'start':
+        run_finished()
         pod_runs += 1
-        f = open('static/data/run_' + str(pod_runs) + ".csv",'w')
-        f.write('sensor,time,value\n')
-        f.close()
         run_start_time = datetime.now()
+        run_name = 'run_' + str(pod_runs) + "_" + run_start_time.strftime("%H-%M-%S")
+        current_run_name = run_name
+        f = open('static/logs/' + run_name + ".csv",'w')
+        f.write('sensor,time,value\n')
+        output_files[run_name] = f
+        for s in logged_sensors:
+            output_files[s] = open(output_files[s].name, 'a')
         logging_sensor_data = True
-        socketio.emit('log_update', {'pod_runs':pod_runs,'sensors':logged_sensors})
 
     elif cmd == 'update' and logging_sensor_data:
         time_crt = datetime.strftime(datetime.now(), '%H:%M:%S')
         time_passed = datetime.strftime(server_start_time + (datetime.now() - run_start_time), '%H:%M:%S')
 
-        f = open('static/data/run_' + str(pod_runs) + ".csv", 'a')
         data['rpm_scaled'] = data['rpm'] / 100
 
         for s in logged_sensors:
-            f.write(s + ',' + str(time_crt) + ',' + str(data[s]) + '\n')
-        f.close()
-
-        for s in logged_sensors:
-            f = open('static/data/' + str(s) + ".csv",'a')
-            f.write('run_' + str(pod_runs) + ',' + str(time_passed) + ',' + str(data[s]) + '\n')
-            f.close()
-
+            output_files[current_run_name].write(s + ',' + str(time_crt) + ',' + str(data[s]) + '\n')
+            output_files[s].write(current_run_name + ',' + str(time_passed) + ',' + str(data[s]) + '\n')
 
         if data['velocity'] <= 0:
-            logging_sensor_data = False
+            close_log_files()
+
+
+def run_finished():
+    global logging_sensor_data
+    global logged_sensors
+    global output_files
+    global current_run_name
+    global run_names
+    global deleted_runs
+
+    logging_sensor_data = False
+    try:
+        output_files[current_run_name].close()
+        for s in logged_sensors:
+            output_files[s].close()
+    except:
+        pass
+
+    if len(deleted_runs) > 0:
+        for s in logged_sensors:
+            f = open('static/logs/' + str(s) + ".csv",'r')
+            lines = f.readlines()
+            f.close()
+            f = open('static/logs/' + str(s) + ".csv",'w')
+            for line in lines:
+                for run_name in deleted_runs:
+                    if run_name not in line:
+                        f.write(line)
+            f.close()
+        deleted_runs = []
+
+    if current_run_name != '':
+        run_names.append(current_run_name)
+        socketio.emit('log_update', {'pod_runs':run_names,'sensors':logged_sensors})
 
 
 # Default behavior on accessing the server
@@ -141,13 +180,26 @@ def handle_disconnect_event():
         serving_data = False
 
 # Triggered when the client sends a command
-@socketio.on('command')
-def handle_gui_command(command):
+@socketio.on('arduino_command')
+def handle_arduino_command(command):
     # TODO: Send the actual commands that Arduino would expect
     arduino_serial.write(command);
 
     if command['cmd'] == 'launch_pod':
         sensor_log('start', '')
+
+@socketio.on('server_command')
+def handle_server_command(command):
+    global run_names
+    global deleted_runs
+    if command['cmd'] == 'delete_run':
+        name = command['name']
+        os.remove('static/logs/' + name + '.csv')
+        run_names.remove(name)
+        deleted_runs.append(name)
+        socketio.emit('log_update', {'pod_runs':run_names,'sensors':logged_sensors})
+
+
 
 if __name__ == '__main__':
     # TODO: Current certificate and key are for testing purposes only

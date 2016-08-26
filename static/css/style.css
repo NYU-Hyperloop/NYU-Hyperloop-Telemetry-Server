@@ -42,7 +42,7 @@ body {
 }
 
 canvas {
-    margin-top: 20px;
+    /*margin-top: 20px;*/
 }
 
 .line {
@@ -103,6 +103,23 @@ select {
     -ms-transition: 0.3s ease all;
     -o-transition: 0.3s ease all;
     transition: 0.3s ease all;
+}
+
+.graph_extra_btn {
+    background-color: #FF0000;
+    padding: 12px;
+    width: auto;
+    font-family: arial, tahoma;
+    font-size: 16px;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+    border-radius: 3px;
+    border: 0;
+}
+
+.graph_extra_btn:active {
+    background-color: #cc0000;
 }
 
 #graph_picker {
