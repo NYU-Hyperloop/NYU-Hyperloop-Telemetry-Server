@@ -6,7 +6,7 @@ var margin = {
         left: 50
     },
     width = 1200 - margin.left - margin.right,
-    height = 600 - margin.top - margin.bottom;
+    height = 500 - margin.top - margin.bottom;
 
 // Parse the date / time
 //var parseDate = d3.time.format("%b %Y").parse;
@@ -92,7 +92,7 @@ function update_blackbox_data(filename) {
                     return d.color = color(d.key);
                 })
                 .on("click", function() {
-                    // Determine if current line is visible 
+                    // Determine if current line is visible
                     var active = d.active ? false : true,
                         newOpacity = active ? 0 : 1;
                     // Hide or show the elements based on the ID

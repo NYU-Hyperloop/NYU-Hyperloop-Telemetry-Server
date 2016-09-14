@@ -60,6 +60,11 @@ output_files = {}
 run_names = []
 deleted_runs = []
 
+# Create 'logs' directory
+logs_dir = 'static/logs'
+if not os.path.exists(logs_dir):
+    os.makedirs(logs_dir)
+
 for s in logged_sensors:
     f = open('static/logs/' + str(s) + ".csv",'w')
     f.write('sensor,time,value\n')
@@ -133,9 +138,8 @@ def run_finished():
 
     if len(deleted_runs) > 0:
         for s in logged_sensors:
-            f = open('static/logs/' + str(s) + ".csv",'r')
-            lines = f.readlines()
-            f.close()
+            with open('static/logs/' + str(s) + ".csv",'r') as f:
+                lines = f.readlines()
             f = open('static/logs/' + str(s) + ".csv",'w')
             for line in lines:
                 for run_name in deleted_runs:
@@ -207,8 +211,7 @@ if __name__ == '__main__':
                       certfile=serverconfig.certfile, keyfile=serverconfig.keyfile,
                       ca_certs=serverconfig.ca_certs,
                       cert_reqs=ssl.CERT_REQUIRED,
-                      ssl_version=ssl.PROTOCOL_TLSv1_2) 
+                      ssl_version=ssl.PROTOCOL_TLSv1_2)
 
     while True:
         time.sleep(1)
-

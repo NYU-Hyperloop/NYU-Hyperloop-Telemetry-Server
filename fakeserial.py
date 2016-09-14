@@ -8,12 +8,12 @@ class FakeDataStruct(Structure):
                     ('roll', c_float),
                     ('acceleration', c_float),
                     ('velocity', c_float),
-                    ('rpm', c_int), 
+                    ('rpm', c_int),
                     ('position', c_int),
-                    ('temperature_inside', c_float), 
-                    ('temperature_outside', c_float), 
+                    ('temperature_inside', c_float),
+                    ('temperature_outside', c_float),
                     ('temperature_electronics', c_float),
-                    ('time_remaining', c_int),   
+                    ('time_remaining', c_int),
                     ]
 
 # Very raw implementation of a fake serial
@@ -29,9 +29,9 @@ class Serial:
 
     def read(self):
         while True:
-            self.data_struct.yaw = random.uniform(0,360)
-            self.data_struct.pitch = random.uniform(-90,90)
-            self.data_struct.roll = random.uniform(-90,90)
+            self.data_struct.yaw = random.uniform(0,90)
+            self.data_struct.pitch = random.uniform(-45,45)
+            self.data_struct.roll = random.uniform(-45,45)
             self.data_struct.acceleration = random.uniform(-50,50)
             self.data_struct.velocity = random.uniform(0,150)
             self.data_struct.rpm = random.randint(0,5603)

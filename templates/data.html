@@ -158,10 +158,10 @@
                 value: 0,
                 min: 0,
                 max: 150,
-                title: "Inside Temperature",
-                label: "°F",
+                label: "Inside Temp.",
+                symbol: "°",
                 relativeGaugeSize: true,
-                donut: false,
+                donut: true,
                 gaugeWidthScale: 0.3
             });
 
@@ -170,10 +170,10 @@
                 value: 0,
                 min: 0,
                 max: 150,
-                title: "Outside Temperature",
-                label: "°F",
+                label: "Outside Temp.",
+                symbol: "°",
                 relativeGaugeSize: true,
-                donut: false,
+                donut: true,
                 gaugeWidthScale: 0.3
             });
 
@@ -182,10 +182,10 @@
                 value: 0,
                 min: 0,
                 max: 150,
-                title: "Electronics Temperature",
-                label: "°F",
+                label: "Electronics Temp.",
+                symbol: "°",
                 relativeGaugeSize: true,
-                donut: false,
+                donut: true,
                 gaugeWidthScale: 0.3
             });
 
@@ -194,16 +194,16 @@
                 value: 0,
                 min: 0,
                 max: 5500,
-                title: "Position",
-                label: "ft",
+                label: "Position",
+                symbol: " ft",
                 relativeGaugeSize: true,
-                donut: true,
+                donut: false,
                 customSectors: [{
                     color: "#1ab188",
                     lo: 0,
                     hi: 5500
                 }],
-                gaugeWidthScale: 0.5
+                gaugeWidthScale: 0.1
             });
 
             g8 = new JustGage({
@@ -211,16 +211,16 @@
                 value: 0,
                 min: 0,
                 max: 65,
-                title: "Time Remaining",
-                label: "s",
+                label: "Time Remaining",
+                symbol: " s",
                 relativeGaugeSize: true,
-                donut: true,
+                donut: false,
                 customSectors: [{
                     color: "#1ab188",
                     lo: 0,
                     hi: 65
                 }],
-                gaugeWidthScale: 0.5
+                gaugeWidthScale: 0.1
             });
 
         });
@@ -246,17 +246,13 @@
 
     <div class="col2">
 
-        <div class="bottom_panel">
-            <div id="g7" class="gauge_bottom_left"></div>
-            <canvas width="180" height="180" id="imu_canvas"></canvas>
-            <div id="g8" class="gauge_bottom_right"></div>
-        </div>
-
         <div class="form">
-            <ul class="tab-group">
+            <!-- <ul class="tab-group">
                 <li class="tab active"><a href="#automatic" onclick="manualControls('disable')">Automatic</a></li>
                 <li class="tab"><a href="#manual" onclick="manualControls('enable')">Manual</a></li>
-            </ul>
+            </ul> -->
+
+            <img id="logo" src="static/img/logo-edit.png"/>
 
             <div class="tab-content">
                 <div id="automatic">
@@ -273,19 +269,18 @@
                     </div>
 
                     <button class="button button-block" onclick="launchPod()">Launch Pod</button>
+                    <button class="button button-block grey" onClick="showGraphPopup()" />Pod Black Box</button>
 
-                    <button class="button button-block grey yellow" onclick="brake('primary')">PRIMARY SYSTEM BRAKE</button>
-                    <button class="button button-block grey red" onclick="brake('aux')">AUTOMATIC AUX BRAKE</button>
+                    <!-- <button class="button button-block grey yellow" onclick="brake('primary')">PRIMARY SYSTEM BRAKE</button>
+                    <button class="button button-block grey red" onclick="brake('aux')">AUTOMATIC AUX BRAKE</button> -->
 
                 </div>
 
-                <div id="manual">
-                    <!--Placeholder to keep width constant   -->
+                <!-- <div id="manual">
                     <div class="top-row">
                         <div class="field-wrap empty-wrap"><input disabled class="placeholder-input" /></div>
                         <div class="field-wrap empty-wrap"><input disabled class="placeholder-input" /></div>
                     </div>
-                    <!--Placeholder to keep width constant   -->
 
 
 
@@ -299,10 +294,19 @@
 
                     <button class="button button-block grey" onClick="showGraphPopup()" />Pod Black Box</button>
 
-                </div>
+                </div> -->
 
             </div>
 
+        </div>
+
+        <div class="bottom_panel">
+            <div id="g7" class="gauge_bottom_left"></div>
+            <div id="imu_canvas_container">
+            <canvas width="150" height="150" id="imu_canvas"></canvas>
+            <span id="imu_label">Pod Dynamics</span>
+          </div>
+            <div id="g8" class="gauge_bottom_right"></div>
         </div>
 
     </div>
