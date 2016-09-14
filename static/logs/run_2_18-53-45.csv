@@ -1,7 +1,0 @@
-sensor,time,value
-velocity,18:53:46,76.6857376099
-acceleration,18:53:46,22.7269077301
-rpm_scaled,18:53:46,25
-temperature_inside,18:53:46,141.049728394
-temperature_outside,18:53:46,17.7135906219
-temperature_electronics,18:53:46,79.8302001953
