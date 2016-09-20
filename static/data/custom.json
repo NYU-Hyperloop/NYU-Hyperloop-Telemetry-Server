@@ -1,0 +1,106 @@
+{
+  "type": "Topology",
+  "transform": {
+    "scale": [0.0036000360003600037,  0.0017364686646866468],
+    "translate": [0,0]
+  },
+  "objects": {
+    "trianglea": {
+      "type": "GeometryCollection",
+      "geometries": [
+        {
+          "type": "Polygon",
+          "arcs": [[1]]
+        }
+      ]
+    },
+    "triangleb": {
+      "type": "GeometryCollection",
+      "geometries": [
+        {
+          "type": "Polygon",
+          "arcs": [[4]]
+        }
+      ]
+    },
+    "pointa": {
+      "type": "GeometryCollection",
+      "geometries": [
+        {
+          "type": "Point",
+          "coordinates": [0,10000]
+        }
+      ]
+    },
+    "pointb": {
+      "type": "GeometryCollection",
+      "geometries": [
+        {
+          "type": "Point",
+          "coordinates": [-3000,0]
+        }
+      ]
+    },
+    "pointc": {
+      "type": "GeometryCollection",
+      "geometries": [
+        {
+          "type": "Point",
+          "coordinates": [3000,0]
+        }
+      ]
+    },
+    "pointd": {
+      "type": "GeometryCollection",
+      "geometries": [
+        {
+          "type": "Point",
+          "coordinates": [0,-10000]
+        }
+      ]
+    },
+    "pointe": {
+      "type": "GeometryCollection",
+      "geometries": [
+        {
+          "type": "Point",
+          "coordinates": [-6000,-10000]
+        }
+      ]
+    },
+    "pointf": {
+      "type": "GeometryCollection",
+      "geometries": [
+        {
+          "type": "Point",
+          "coordinates": [6000,-10000]
+        }
+      ]
+    },
+    "rhombus": {
+      "type": "GeometryCollection",
+      "geometries": [
+        {
+          "type": "Polygon",
+          "arcs": [[0]]
+        }
+      ]
+    },
+    "diamond": {
+      "type": "GeometryCollection",
+      "geometries": [
+        {
+          "type": "Polygon",
+          "arcs": [[2]]
+        }
+      ]
+    }
+  },
+  "arcs": [
+      [[-10000,0],[10000,-20000],[10000,20000],[-10000,20000],[-10000,-20000]],
+      [[-10000,0],[10000,-20000],[10000,20000],[-20000,0]],
+      [[-7000,0],[7000,-21000],[7000,21000],[-7000,21000],[-7000,-21000]],
+      [[-10000,0],[10000,20000],[10000,-20000],[-20000,0]],
+      [[-7000,0],[7000,21000],[7000,-21000],[-14000,0]]
+    ]
+}

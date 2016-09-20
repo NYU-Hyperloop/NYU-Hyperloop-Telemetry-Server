@@ -11,25 +11,29 @@ body {
 
 .gauge_bottom_left {
     display: block;
-    width: 33%;
+    width: 30%;
     float: left;
 }
 
 .gauge_bottom_right {
     display: block;
-    width: 33%;
+    width: 30%;
     float: right;
+}
+
+.bottom_panel {
+  margin-top: 40px;
 }
 
 .col1 {
     float: left;
-    width: 20%;
+    width: 18%;
     height: 100%;
 }
 
 .col2 {
     float: none;
-    width: 20%;
+    width: 64%;
     height: 100%;
     overflow: hidden;
     display: table-cell;
@@ -37,13 +41,10 @@ body {
 
 .col3 {
     float: right;
-    width: 20%;
+    width: 18%;
     height: 100%;
 }
 
-canvas {
-    margin-top: 20px;
-}
 
 .line {
     stroke: steelblue;
@@ -72,6 +73,7 @@ canvas {
 #graph_popup {
     width: 100%;
     height: 100%;
+    text-align: center !important;
 }
 
 #graph_controls {
@@ -105,6 +107,23 @@ select {
     transition: 0.3s ease all;
 }
 
+.graph_extra_btn {
+    background-color: #FF0000;
+    padding: 12px;
+    width: auto;
+    font-family: arial, tahoma;
+    font-size: 16px;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+    border-radius: 3px;
+    border: 0;
+}
+
+.graph_extra_btn:active {
+    background-color: #cc0000;
+}
+
 #graph_picker {
     background-color: #1ab188;
 }
@@ -132,4 +151,17 @@ select:active {
 
 .close-btn:after {
     content: '✖';
+}
+
+#imu_canvas_container {
+  display: inline-block;
+}
+
+#imu_label {
+  display: block;
+  font-family: Arial;
+    font-size: 14px;
+    font-weight: normal;
+    color: #b3b3b3;
+    margin-top: 10px;
 }

@@ -30,15 +30,16 @@ a:hover {
     background: rgba(19, 35, 47, 0.9);
     padding: 20px;
     padding-bottom: 10px;
-    max-width: 600px;
-    min-width: 400px;
+    /*max-width: 600px;*/
+    /*min-width: 400px;*/
+    width: 75%;
     margin: 0 auto;
-    margin-top: 20px;
+    margin-top: 0px;
     border-radius: 4px;
     box-shadow: 0 4px 10px 4px rgba(19, 35, 47, 0.3);
 }
 
-.tab-group {
+/*.tab-group {
     list-style: none;
     padding: 0;
     margin: 0 0 20px 0;
@@ -73,11 +74,11 @@ a:hover {
 .tab-group .active a {
     background: #1ab188;
     color: #ffffff;
-}
+}*/
 
-.tab-content > div:last-child {
+/*.tab-content > div:last-child {
     display: none;
-}
+}*/
 
 h1 {
     text-align: center;
@@ -220,7 +221,12 @@ textarea {
     background: #000000;
 }
 
-.arrow-up {
+#logo {
+  width: 30%;
+  margin-bottom: 10px;
+}
+
+/*.arrow-up {
     width: 0;
     height: 0;
     margin: 0 auto;
@@ -253,4 +259,4 @@ textarea {
 
 .empty-wrap {
     margin-bottom: 0px;
-}
+}*/
