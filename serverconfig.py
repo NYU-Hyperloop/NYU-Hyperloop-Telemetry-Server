@@ -20,6 +20,8 @@ class ServerConfig(ConfigParser.RawConfigParser, object):
         assert self.has_option('Serial', 'timeout')
         assert self.has_option('Sensors', 'begin_pad')
         assert self.has_option('Logging', 'sensors')
+        assert self.has_option('Auth', 'username')
+        assert self.has_option('Auth', 'password')
 
         self.data = databuilder.DataBuilder(self.get('Sensors', 'begin_pad'), self.get_sensors())
 
@@ -29,6 +31,9 @@ class ServerConfig(ConfigParser.RawConfigParser, object):
         self.certfile = self.get('SocketIO', 'certfile')
         self.keyfile = self.get('SocketIO', 'keyfile')
         self.ca_certs = self.get('SocketIO', 'ca_certs')
+
+        self.username = self.get('Auth', 'username')
+        self.password = self.get('Auth', 'password')
         
         self.logged_sensors = self.get_logged_sensors()
 

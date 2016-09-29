@@ -17,7 +17,7 @@ pip install pyserial Flask flask-socketio gevent gevent-websocket
 ```
 python server.py
 ```
-The server runs at <https://localhost:8443>.
+The server runs at <https://localhost:8443>. Testing username and password: 'hyper' - 'loop'
 **If accessed via 127.0.0.1, there will be a domain mismatch with the SSL certificate.**
 
 ## (Extras) (Not needed when testing server)
