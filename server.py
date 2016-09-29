@@ -208,6 +208,10 @@ def handle_disconnect_event():
 # Triggered when the client sends a command
 @socketio.on('arduino_command')
 def handle_arduino_command(command):
+    if(request.remote_addr not in serverconfig.authorized_ips):
+        print("The IP " + str(request.remote_addr) + " is not authorized to execute this operation.")
+        return
+
     # TODO: Send the actual commands that Arduino would expect
     arduino_serial.write(command);
 
@@ -216,6 +220,10 @@ def handle_arduino_command(command):
 
 @socketio.on('server_command')
 def handle_server_command(command):
+    if(request.remote_addr not in serverconfig.authorized_ips):
+        print("The IP " + str(request.remote_addr) + " is not authorized to execute this operation.")
+        return
+
     global run_names
     global deleted_runs
     if command['cmd'] == 'delete_run':

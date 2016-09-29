@@ -34,6 +34,8 @@ class ServerConfig(ConfigParser.RawConfigParser, object):
 
         self.username = self.get('Auth', 'username')
         self.password = self.get('Auth', 'password')
+
+        self.authorized_ips = self.get_authorized_ips()
         
         self.logged_sensors = self.get_logged_sensors()
 
@@ -51,3 +53,6 @@ class ServerConfig(ConfigParser.RawConfigParser, object):
 
     def get_logged_sensors(self):
         return [j for i,j in self.items('Logging') if 'sensor_' in i]
+
+    def get_authorized_ips(self):
+        return [j for i,j in self.items('AuthorizedIPs') if 'ip_' in i]
