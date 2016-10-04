@@ -1,5 +1,6 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request, Response
 from flask_socketio import SocketIO, send, emit
+from functools import wraps
 
 # Necessary to make standard library cooperate with gevent
 from gevent import monkey
@@ -33,6 +34,26 @@ serverconfig = serverconfig.ServerConfig('server.cfg', args.t)
 # Flask configuration
 app = Flask(__name__)
 app.config['SECRET_KEY'] = serverconfig.secret_key
+
+# Flask HTTP Auth
+def check_auth(username, password):
+    return username == serverconfig.username and password == serverconfig.password
+
+def authenticate():
+    return Response(
+    'Could not verify your access level for that URL.\n'
+    'You have to login with proper credentials', 401,
+    {'WWW-Authenticate': 'Basic realm="Login Required"'})
+
+def requires_auth(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        auth = request.authorization
+        if not auth or not check_auth(auth.username, auth.password):
+            return authenticate()
+        return f(*args, **kwargs)
+    return decorated
+
 
 # Serial input queue
 serial_queue = Queue.Queue()
@@ -155,6 +176,7 @@ def run_finished():
 
 # Default behavior on accessing the server
 @app.route('/')
+@requires_auth
 def index():
     return render_template('data.html')
 
@@ -186,6 +208,10 @@ def handle_disconnect_event():
 # Triggered when the client sends a command
 @socketio.on('arduino_command')
 def handle_arduino_command(command):
+    if(request.remote_addr not in serverconfig.authorized_ips):
+        print("The IP " + str(request.remote_addr) + " is not authorized to execute this operation.")
+        return
+
     # TODO: Send the actual commands that Arduino would expect
     arduino_serial.write(command);
 
@@ -194,6 +220,10 @@ def handle_arduino_command(command):
 
 @socketio.on('server_command')
 def handle_server_command(command):
+    if(request.remote_addr not in serverconfig.authorized_ips):
+        print("The IP " + str(request.remote_addr) + " is not authorized to execute this operation.")
+        return
+
     global run_names
     global deleted_runs
     if command['cmd'] == 'delete_run':

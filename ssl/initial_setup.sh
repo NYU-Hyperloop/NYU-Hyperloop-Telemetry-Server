@@ -10,6 +10,6 @@ cp ca.cer server/ca.cer
 cp ca.key server/ca.key
 cp server.cer server/server.cer
 cp server.key server/server.key
-cp client.p12 client/client.p12
+cp client.p12 client/client_127.0.0.1.p12
 rm server.req client.key client.cer client.req ca.cer ca.key server.cer server.key client.p12
 echo 'SSL configuration complete'
