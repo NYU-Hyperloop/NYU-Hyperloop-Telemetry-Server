@@ -3,7 +3,7 @@ from ctypes import Structure, Union, c_byte, c_int, c_float, sizeof
 TYPE_DICT = {'int': c_int, 'float': c_float}
 
 class DataStruct(Structure):
-    pass
+    _pack_ = 1
 
 class Data(Union):
     pass
@@ -16,7 +16,7 @@ class DataBuilder:
         DataStruct._fields_ = self.struct_fields
 
         Data._fields_ = [('sensor_data', DataStruct),
-                         ('data_buffer',     c_byte * self.packet_size)]
+                         ('data_buffer', c_byte * self.packet_size)]
 
         self.data = Data()
         self.data.sensor_data = DataStruct()
@@ -27,4 +27,5 @@ class DataBuilder:
         for i,(_sensor, _type) in enumerate(sensors):
             assert(_type in TYPE_DICT.keys())
             self.struct_fields.append((_sensor, TYPE_DICT[_type]))
-            self.packet_size += 4
+            self.struct_fields.append(('pad' + str(i), c_byte))
+            self.packet_size += 5
