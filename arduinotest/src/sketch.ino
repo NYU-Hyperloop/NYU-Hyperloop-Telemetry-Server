@@ -1,24 +1,35 @@
 
 // Size of buffer of all sensor data and their timestamps
-const size_t DATA_BUFFER_SIZE = 48;
+const size_t DATA_BUFFER_SIZE = 60;
 
 // sensorData object and the data buffer share the same
 // location in memory. Makes it easy to collect data 
 // and ship it quickly.
 union Data {
     struct DataStruct {
-        byte beginPad[4]; // padding to easily find beginning
+        byte beginPad[5]; // padding to easily find beginning
         float yaw;
+        byte  pad1;
         float pitch;
+        byte  pad2;
         float roll;
+        byte  pad3;
         float acceleration;
+        byte  pad4;
         float velocity;
-        long rpm;
-        long position;
+        byte  pad5;
+        long  rpm;
+        byte  pad6;
+        long  position;
+        byte  pad7;
         float temperature_inside;
+        byte  pad8;
         float temperature_outside;
+        byte  pad9;
         float temperature_electronics;
+        byte  pad10;
         long time_remaining;
+        byte  pad11;
     } sensorData;
     char buffer[DATA_BUFFER_SIZE];
 } myData;
@@ -31,6 +42,18 @@ void setup()
     myData.sensorData.beginPad[1] = 0x42;
     myData.sensorData.beginPad[2] = 0x43;
     myData.sensorData.beginPad[3] = 0x44;
+    myData.sensorData.beginPad[4] = 0x45;
+    myData.sensorData.pad1        = 0x00;
+    myData.sensorData.pad2        = 0x00;
+    myData.sensorData.pad3        = 0x00;
+    myData.sensorData.pad4        = 0x00;
+    myData.sensorData.pad5        = 0x00;
+    myData.sensorData.pad6        = 0x00;
+    myData.sensorData.pad7        = 0x00;
+    myData.sensorData.pad8        = 0x00;
+    myData.sensorData.pad9        = 0x00;
+    myData.sensorData.pad10       = 0x00;
+    myData.sensorData.pad11       = 0x00;
 
     // start serial
     Serial.begin(9600);
