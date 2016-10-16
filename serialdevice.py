@@ -16,10 +16,10 @@ class Serial:
 
     def read(self):
         while True:
+            self.sync()
             tmp = self.serial_device.read(self.PACKET_SIZE)
             self.data.data_buffer = (c_byte * self.PACKET_SIZE).from_buffer_copy(tmp)
-            if self.packet_verified():
-                self.serialize_and_put()
+            self.serialize_and_put()
             time.sleep(.2)
 
     def readline(self):
@@ -34,14 +34,7 @@ class Serial:
                 if len(bytes_read) == len(self.BEGIN_PAD):
                     break
 
-        self.serial_device.read(self.PACKET_SIZE-len(self.BEGIN_PAD))
-
-    def packet_verified(self):
-        for i, _ in enumerate(self.BEGIN_PAD):
-            if ord(self.BEGIN_PAD[i]) != self.data.sensor_data.begin_pad[i]:
-                return False
-
-        return True
+        #self.serial_device.read(self.PACKET_SIZE-len(self.BEGIN_PAD))
 
     def serialize_and_put(self):
         self.serial_queue.put(dict((field, getattr(self.data.sensor_data, field)) \

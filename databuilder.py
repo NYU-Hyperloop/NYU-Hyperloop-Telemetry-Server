@@ -22,7 +22,7 @@ class DataBuilder:
         self.data.sensor_data = DataStruct()
 
     def construct_fields(self, sensors):
-        self.struct_fields = [('begin_pad', c_byte * len(self.begin_pad))]
+        self.struct_fields = []
         self.packet_size = len(self.begin_pad)
         for i,(_sensor, _type) in enumerate(sensors):
             assert(_type in TYPE_DICT.keys())
