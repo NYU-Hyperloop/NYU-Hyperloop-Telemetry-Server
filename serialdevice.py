@@ -34,8 +34,6 @@ class Serial:
                 if len(bytes_read) == len(self.BEGIN_PAD):
                     break
 
-        #self.serial_device.read(self.PACKET_SIZE-len(self.BEGIN_PAD))
-
     def serialize_and_put(self):
         self.serial_queue.put(dict((field, getattr(self.data.sensor_data, field)) \
             for field, _ in self.data.sensor_data._fields_ if (field != 'begin_pad')))
