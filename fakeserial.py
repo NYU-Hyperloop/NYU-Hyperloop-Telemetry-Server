@@ -18,9 +18,9 @@ class FakeDataStruct(Structure):
 
 # Very raw implementation of a fake serial
 class Serial:
-    def __init__(self, data_queue, port='COM1', baudrate = 19200, timeout=1):
+    def __init__(self, port='COM1', baudrate = 19200, timeout=1):
         self.name = "Fake Arduino"
-        self.serial_queue = data_queue
+        self.last_reading = None
         self.data_struct = FakeDataStruct()
 
     def write(self, string):
@@ -41,12 +41,12 @@ class Serial:
             self.data_struct.temperature_electronics = random.uniform(0,150)
             self.data_struct.time_remaining = random.randint(0,65)
 
-            self.serialize_and_put()
+            self.last_reading = self.serialize()
             time.sleep(.1)
 
     def readline(self):
-        return self.serial_queue.get()
+        return self.last_reading
 
-    def serialize_and_put(self):
-        self.serial_queue.put(dict((field, getattr(self.data_struct, field)) \
-            for field, _ in self.data_struct._fields_ if (field != 'begin_pad')))
+    def serialize(self):
+        return dict((field, getattr(self.data_struct, field)) \
+            for field, _ in self.data_struct._fields_ if (field != 'begin_pad'))

@@ -39,11 +39,11 @@ class ServerConfig(ConfigParser.RawConfigParser, object):
         
         self.logged_sensors = self.get_logged_sensors()
 
-    def Serial(self, data_queue):
+    def Serial(self):
         if self.testing:
-            return fakeserial.Serial(data_queue)
+            return fakeserial.Serial()
         else:
-            return serialdevice.Serial(data_queue, self.data, \
+            return serialdevice.Serial(self.data, \
                                        self.get('Serial', 'port'), \
                                        int(self.get('Serial', 'baudrate')), \
                                        int(self.get('Serial', 'timeout')))
