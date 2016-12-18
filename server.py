@@ -92,7 +92,7 @@ logged_sensors.pop()
 def serve_data():
     global serving_data
     while serving_data:
-        reading = serial_queue.get()
+        reading = arduino_serial.readline()
         with app.test_request_context('/'):
             socketio.emit('sensor_data', reading)
             print('SEND TO CLIENT:', reading)

@@ -1,4 +1,6 @@
 from ctypes import Structure, c_int, c_float
+import datetime
+import logging
 import random
 import time
 
@@ -18,10 +20,17 @@ class FakeDataStruct(Structure):
 
 # Very raw implementation of a fake serial
 class Serial:
-    def __init__(self, port='COM1', baudrate = 19200, timeout=1):
+    def __init__(self, log,  port='COM1', baudrate = 19200, timeout=1):
         self.name = "Fake Arduino"
         self.last_reading = None
         self.data_struct = FakeDataStruct()
+
+        self.lgr = logging.getLogger(str(datetime.datetime.now()))
+        print(log)
+        fhr = logging.FileHandler(log)
+        fhr.setFormatter(logging.Formatter('%(message)s'))
+        self.lgr.addHandler(fhr)
+        self.lgr.setLevel(logging.INFO)
 
     def write(self, string):
         print("SEND TO ARDUINO:", string)
@@ -42,6 +51,7 @@ class Serial:
             self.data_struct.time_remaining = random.randint(0,65)
 
             self.last_reading = self.serialize()
+            self.lgr.info(self.last_reading)
             time.sleep(.1)
 
     def readline(self):

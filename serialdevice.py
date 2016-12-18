@@ -19,10 +19,11 @@ class Serial(object):
         self.data = data.data
         self.last_reading = None
 
-        self.lgr = logging.getLogger(datetime.datetime.now())
+        self.lgr = logging.getLogger(str(datetime.datetime.now()))
         fhr = logging.FileHandler(log)
         fhr.setFormatter(logging.Formatter('%(message)s'))
         self.lgr.addHandler(fhr)
+        self.lgr.setLevel(logging.INFO)
         self.sync()
 
     def write(self, data):
@@ -36,7 +37,7 @@ class Serial(object):
             tmp = self.serial_device.read(self.packet_size)
             self.data.data_buffer = (c_byte * self.packet_size).from_buffer_copy(tmp)
             self.last_reading = self.serialize()
-            self.lgr()
+            self.lgr.info(self.last_reading)
             time.sleep(.2)
 
     def readline(self):

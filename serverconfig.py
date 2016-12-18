@@ -19,6 +19,7 @@ class ServerConfig(ConfigParser.RawConfigParser, object):
         assert self.has_option('Serial', 'baudrate')
         assert self.has_option('Serial', 'timeout')
         assert self.has_option('Sensors', 'begin_pad')
+        assert self.has_option('Logging', 'file')
         assert self.has_option('Logging', 'sensors')
         assert self.has_option('Auth', 'username')
         assert self.has_option('Auth', 'password')
@@ -35,15 +36,18 @@ class ServerConfig(ConfigParser.RawConfigParser, object):
         self.username = self.get('Auth', 'username')
         self.password = self.get('Auth', 'password')
 
+        self.log = self.get('Logging', 'file')
+
         self.authorized_ips = self.get_authorized_ips()
         
         self.logged_sensors = self.get_logged_sensors()
 
     def Serial(self):
         if self.testing:
-            return fakeserial.Serial()
+            return fakeserial.Serial(self.log)
         else:
             return serialdevice.Serial(self.data, \
+                                       self.log, \
                                        self.get('Serial', 'port'), \
                                        int(self.get('Serial', 'baudrate')), \
                                        int(self.get('Serial', 'timeout')))
