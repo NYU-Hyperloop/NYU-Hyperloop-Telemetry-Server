@@ -7,7 +7,6 @@ from gevent import monkey
 monkey.patch_all()
 
 import argparse
-import Queue
 import threading
 import time
 import ssl
@@ -55,10 +54,7 @@ def requires_auth(f):
     return decorated
 
 
-# Serial input queue
-serial_queue = Queue.Queue()
-
-arduino_serial = serverconfig.Serial(serial_queue)
+arduino_serial = serverconfig.Serial()
 
 if args.d:
     app.debug = True
@@ -96,7 +92,7 @@ logged_sensors.pop()
 def serve_data():
     global serving_data
     while serving_data:
-        reading = serial_queue.get()
+        reading = arduino_serial.readline()
         with app.test_request_context('/'):
             socketio.emit('sensor_data', reading)
             print('SEND TO CLIENT:', reading)

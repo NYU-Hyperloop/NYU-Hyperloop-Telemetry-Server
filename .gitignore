@@ -11,3 +11,6 @@ __pycache__
 # Log files
 static/logs/*.csv
 static/data/*.csv
+
+# ViM
+*.swp
