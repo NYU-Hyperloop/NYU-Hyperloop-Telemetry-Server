@@ -11,6 +11,7 @@ import threading
 import time
 import ssl
 import os
+import socket
 import sys
 from datetime import datetime
 
@@ -100,7 +101,10 @@ def serve_data():
             print('SEND TO CLIENT:', reading)
             print('\n')
             sensor_log('update',reading)
-            sx_sender.send(reading)
+            try:
+                sx_sender.send(reading)
+            except socket.error:
+                pass
         time.sleep(2)
 
 # Logging function for sensor data

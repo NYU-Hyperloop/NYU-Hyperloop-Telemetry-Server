@@ -57,6 +57,8 @@
             g8.refresh(data['time']);
             updateLeds(data['pneumatics']);
             updateStatus(data['status']);
+            updateBatteryVoltage(data['battery_voltage']);
+            updateBatteryCurrent(data['battery_current']);
         });
 
         // Our brake function
@@ -119,6 +121,18 @@
             var statuses = ["Fault", "Idle", "Ready", "Pushing", "Coast", "Braking"];
             var statusDiv = document.getElementById('status');
             statusDiv.innerHTML = statuses[i];
+        }
+
+
+        function updateBatteryVoltage(i) {
+            var voltDiv = document.getElementById('battery_voltage');
+            voltDiv.innerHTML = i;
+        }
+
+
+        function updateBatteryCurrent(i) {
+            var currDiv = document.getElementById('battery_current');
+            currDiv.innerHTML = i;
         }
 
 
@@ -335,9 +349,17 @@
                     <td></td>
                 </tr>
             </table>
-            <div>
+            <div style="color:white">
                 <span>Status: </span>
                 <span id="status">None</span>
+            </div>
+            <div style="color:white">
+                <span>Battery Voltage: </span>
+                <span id="battery_voltage">None</span>
+            </div>
+            <div style="color:white">
+                <span>Battery Current: </span>
+                <span id="battery_current">None</span>
             </div>
         </div>
 

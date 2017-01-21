@@ -1,6 +1,6 @@
 from ctypes import Structure, Union, c_byte, c_int, c_float, sizeof
 
-TYPE_DICT = {'int': c_int, 'float': c_float}
+TYPE_DICT = {'int': c_int, 'float': c_float, 'byte': c_byte}
 
 class DataStruct(Structure):
     _pack_ = 1
