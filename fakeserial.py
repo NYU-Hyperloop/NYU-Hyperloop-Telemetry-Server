@@ -1,21 +1,23 @@
-from ctypes import Structure, c_int, c_float
+from ctypes import Structure, c_int, c_uint32, c_byte, c_int32
 import datetime
 import logging
 import random
 import time
 
 class FakeDataStruct(Structure):
-    _fields_ = [('yaw', c_float),
-                    ('pitch', c_float),
-                    ('roll', c_float),
-                    ('acceleration', c_float),
-                    ('velocity', c_float),
+    _fields_ = [('status', c_byte),
+                    ('acceleration', c_int32),
+                    ('velocity', c_int32),
                     ('rpm', c_int),
                     ('position', c_int),
-                    ('temperature_inside', c_float),
-                    ('temperature_outside', c_float),
-                    ('temperature_electronics', c_float),
-                    ('time_remaining', c_int),
+                    ('battery_temperature', c_int32),
+                    ('temp1', c_int32),
+                    ('temp2', c_int32),
+                    ('battery_voltage', c_int32),
+                    ('battery_current', c_int32),
+                    ('stripe_count', c_uint32),
+                    ('time', c_int),
+                    ('pneumatics', c_uint32),
                     ]
 
 # Very raw implementation of a fake serial
@@ -38,17 +40,19 @@ class Serial:
 
     def read(self):
         while True:
-            self.data_struct.yaw = random.uniform(0,90)
-            self.data_struct.pitch = random.uniform(-45,45)
-            self.data_struct.roll = random.uniform(-45,45)
-            self.data_struct.acceleration = random.uniform(-50,50)
-            self.data_struct.velocity = random.uniform(0,150)
+            self.data_struct.status = random.randint(0,5);
+            self.data_struct.acceleration = random.randint(-50,50)
+            self.data_struct.velocity = random.randint(0,150)
             self.data_struct.rpm = random.randint(0,5603)
             self.data_struct.position = random.randint(0,5500)
-            self.data_struct.temperature_inside = random.uniform(0,150)
-            self.data_struct.temperature_outside = random.uniform(0,150)
-            self.data_struct.temperature_electronics = random.uniform(0,150)
-            self.data_struct.time_remaining = random.randint(0,65)
+            self.data_struct.temp1 = random.randint(0,150)
+            self.data_struct.temp2 = random.randint(0,150)
+            self.data_struct.battery_voltage = random.randint(0,16)
+            self.data_struct.battery_current = random.randint(0,10)
+            self.data_struct.battery_temperature = random.randint(0,150)
+            self.data_struct.stripe_count = random.randint(0,50)
+            self.data_struct.time = random.randint(0,65)
+            self.data_struct.pneumatics = random.randint(0,4096)
 
             self.last_reading = self.serialize()
             self.lgr.info(self.last_reading)

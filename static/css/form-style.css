@@ -190,6 +190,12 @@ textarea {
     width: 100%;
 }
 
+.button-block-half {
+    display: inline;
+    width: 49.5%;
+    padding: 0px;
+}
+
 .grey {
     background: rgba(160, 179, 176, 0.25);
     color: #fff;

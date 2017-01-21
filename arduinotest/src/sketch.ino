@@ -1,6 +1,5 @@
-
 // Size of buffer of all sensor data and their timestamps
-const size_t DATA_BUFFER_SIZE = 60;
+const size_t DATA_BUFFER_SIZE = 82;
 
 // sensorData object and the data buffer share the same
 // location in memory. Makes it easy to collect data 
@@ -8,28 +7,38 @@ const size_t DATA_BUFFER_SIZE = 60;
 union Data {
     struct DataStruct {
         byte beginPad[5]; // padding to easily find beginning
-        float yaw;
+        byte  status;
         byte  pad1;
-        float pitch;
+        long  acceleration;
         byte  pad2;
-        float roll;
+        long  velocity;
         byte  pad3;
-        float acceleration;
-        byte  pad4;
-        float velocity;
-        byte  pad5;
         long  rpm;
-        byte  pad6;
+        byte  pad4;
         long  position;
+        byte  pad5;
+        long  time;
+        byte  pad6;
+        long  battery_voltage;
         byte  pad7;
-        float temperature_inside;
+        long  battery_current;
         byte  pad8;
-        float temperature_outside;
+        long  battery_temperature;
         byte  pad9;
-        float temperature_electronics;
+        long  temp1;
         byte  pad10;
-        long time_remaining;
+        long  temp2;
         byte  pad11;
+        long  temp3;
+        byte  pad12;
+        long  temp4;
+        byte  pad13;
+        long  temp5;
+        byte  pad14;
+        unsigned long stripe_count;
+        byte  pad15;
+        unsigned long pneumatics;
+        byte  pad16;
     } sensorData;
     char buffer[DATA_BUFFER_SIZE];
 } myData;
@@ -54,6 +63,11 @@ void setup()
     myData.sensorData.pad9        = 0x00;
     myData.sensorData.pad10       = 0x00;
     myData.sensorData.pad11       = 0x00;
+    myData.sensorData.pad12       = 0x00;
+    myData.sensorData.pad13       = 0x00;
+    myData.sensorData.pad14       = 0x00;
+    myData.sensorData.pad15       = 0x00;
+    myData.sensorData.pad16       = 0x00;
 
     // start serial
     Serial.begin(9600);
@@ -63,20 +77,25 @@ void setup()
 void loop()
 {
     // send the data buffer
-    myData.sensorData.yaw = random(0,360);
-    myData.sensorData.pitch = random(-90,90);
-    myData.sensorData.roll = random(-90,90);
+    myData.sensorData.status = random(0,6);
     myData.sensorData.acceleration = random(-50,50);
     myData.sensorData.velocity = random(0,150);
     myData.sensorData.rpm = random(0,5603);
     myData.sensorData.position = random(0,5500);
-    myData.sensorData.temperature_inside = random(0,150);
-    myData.sensorData.temperature_outside = random(0,150);
-    myData.sensorData.temperature_electronics = random(0,150);
-    myData.sensorData.time_remaining = random(0,65);
+    myData.sensorData.time = random(0,65);
+    myData.sensorData.battery_voltage = random(0,16);
+    myData.sensorData.battery_current = random(0,50);
+    myData.sensorData.battery_temperature = random(0,150);
+    myData.sensorData.temp1 = random(0,150);
+    myData.sensorData.temp2 = random(0,150);
+    myData.sensorData.temp3 = random(0,150);
+    myData.sensorData.temp4 = random(0,150);
+    myData.sensorData.temp5 = random(0,150);
+    myData.sensorData.stripe_count = random(0,50);
+    myData.sensorData.pneumatics = random(0,4096);
 
     Serial.write(myData.buffer, DATA_BUFFER_SIZE);
 
     // delay to give it time to send
-    delay(100);
+    delay(1);
 }

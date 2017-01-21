@@ -50,20 +50,26 @@
             g1.refresh(data['velocity']);
             g2.refresh(data['acceleration']);
             g3.refresh(data['rpm']);
-            g4.refresh(data['temperature_inside']);
-            g5.refresh(data['temperature_outside']);
-            g6.refresh(data['temperature_electronics']);
+            g4.refresh(data['battery_temperature']);
+            g5.refresh(data['temp1']);
+            g6.refresh(data['temp2']);
             g7.refresh(data['position']);
-            g8.refresh(data['time_remaining']);
-
-            rotate_sphere(data['yaw'], data['pitch'], data['roll']);
+            g8.refresh(data['time']);
+            updateLeds(data['pneumatics']);
+            updateStatus(data['status']);
         });
 
         // Our brake function
-        function brake(type) {
+        function brake() {
             socket.emit('arduino_command', {
-                cmd: 'brake',
-                type: type
+                cmd: 'brake'
+            });
+        }
+
+        // Our power off
+        function powerOff() {
+            socket.emit('arduino_command', {
+                cmd: 'power_off'
             });
         }
 
@@ -106,6 +112,13 @@
             var filename = selector.options[selector.selectedIndex].value;
             var random_id = Math.random();
             update_blackbox_data("/static/logs/" + filename + ".csv?nocache=" + random_id);
+        }
+
+
+        function updateStatus(i) {
+            var statuses = ["Fault", "Idle", "Ready", "Pushing", "Coast", "Braking"];
+            var statusDiv = document.getElementById('status');
+            statusDiv.innerHTML = statuses[i];
         }
 
 
@@ -158,7 +171,7 @@
                 value: 0,
                 min: 0,
                 max: 150,
-                label: "Inside Temp.",
+                label: "Battery Temp.",
                 symbol: "°",
                 relativeGaugeSize: true,
                 donut: true,
@@ -170,8 +183,7 @@
                 value: 0,
                 min: 0,
                 max: 150,
-                label: "Outside Temp.",
-                symbol: "°",
+                label: "Temp. 1", symbol: "°",
                 relativeGaugeSize: true,
                 donut: true,
                 gaugeWidthScale: 0.3
@@ -182,7 +194,7 @@
                 value: 0,
                 min: 0,
                 max: 150,
-                label: "Electronics Temp.",
+                label: "Temp. 2",
                 symbol: "°",
                 relativeGaugeSize: true,
                 donut: true,
@@ -211,7 +223,7 @@
                 value: 0,
                 min: 0,
                 max: 65,
-                label: "Time Remaining",
+                label: "Time",
                 symbol: " s",
                 relativeGaugeSize: true,
                 donut: false,
@@ -271,8 +283,9 @@
                     <button class="button button-block" onclick="launchPod()">Launch Pod</button>
                     <button class="button button-block grey" onClick="showGraphPopup()" />Pod Black Box</button>
 
-                    <!-- <button class="button button-block grey yellow" onclick="brake('primary')">PRIMARY SYSTEM BRAKE</button>
-                    <button class="button button-block grey red" onclick="brake('aux')">AUTOMATIC AUX BRAKE</button> -->
+                    <!--<button class="button button-block grey yellow" onclick="brake('primary')">PRIMARY SYSTEM BRAKE</button>-->
+                    <button class="button button-block-half grey red" onclick="brake()">Emergency Brake</button>
+                    <button class="button button-block-half grey red" onclick="powerOff()">Power<br>Off</button>
 
                 </div>
 
@@ -302,11 +315,30 @@
 
         <div class="bottom_panel">
             <div id="g7" class="gauge_bottom_left"></div>
-            <div id="imu_canvas_container">
-            <canvas width="150" height="150" id="imu_canvas"></canvas>
-            <span id="imu_label">Pod Dynamics</span>
-          </div>
             <div id="g8" class="gauge_bottom_right"></div>
+            <table>
+                <th>
+                    <td>1</td>
+                    <td>2</td>
+                    <td>3</td>
+                    <td>4</td>
+                    <td>5</td>
+                    <td>6</td>
+                </th>
+                <tr id="open">
+                    <td>Open</td>
+                </tr>
+                <tr id="closed">
+                    <td>Closed</td>
+                </tr>
+                <tr id="buttons">
+                    <td></td>
+                </tr>
+            </table>
+            <div>
+                <span>Status: </span>
+                <span id="status">None</span>
+            </div>
         </div>
 
     </div>
@@ -332,7 +364,7 @@
 <script type="text/javascript" src="/static/js/form.js"></script>
 <!-- The "black box" type sensor graph -->
 <script type="text/javascript" src="/static/js/blackbox.js"></script>
-<!-- Rotating globe used to display Roll, Pitch, Yaw -->
-<script type="text/javascript" src="/static/js/rotating-globe.js"></script>
+<!-- Pneumatics -->
+<script type="text/javascript" src="/static/js/pneumatics.js"></script>
 
 </html>

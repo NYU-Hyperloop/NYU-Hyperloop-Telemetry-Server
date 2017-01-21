@@ -25,6 +25,10 @@ class Serial(object):
         self.lgr.addHandler(fhr)
         self.lgr.setLevel(logging.INFO)
         self.sync()
+        tmp = self.serial_device.read(self.packet_size)
+        self.data.data_buffer = (c_byte * self.packet_size).from_buffer_copy(tmp)
+        self.last_reading = self.serialize()
+        self.lgr.info(self.last_reading)
 
     def write(self, data):
         """write() writes a data
@@ -38,7 +42,7 @@ class Serial(object):
             self.data.data_buffer = (c_byte * self.packet_size).from_buffer_copy(tmp)
             self.last_reading = self.serialize()
             self.lgr.info(self.last_reading)
-            time.sleep(.2)
+            time.sleep(.001)
 
     def readline(self):
         return self.last_reading

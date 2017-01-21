@@ -165,3 +165,34 @@ select:active {
     color: #b3b3b3;
     margin-top: 10px;
 }
+
+.red_led {
+  background: #f00;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+}
+
+.green_led {
+  background: #0f0;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+}
+
+.white_led {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+}
+
+.circle {
+  border-style: solid;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+}
+
+.half {
+  width: 50%;
+}

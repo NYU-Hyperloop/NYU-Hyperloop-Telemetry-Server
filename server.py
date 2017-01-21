@@ -16,6 +16,7 @@ from datetime import datetime
 
 import fakeserial
 import serverconfig
+import spacexsender as sx
 
 # Toggle on if testing
 parser = argparse.ArgumentParser(description='Telemetry server')
@@ -55,6 +56,7 @@ def requires_auth(f):
 
 
 arduino_serial = serverconfig.Serial()
+sx_sender = sx.SpaceXSender('192.168.0.28', 3000)
 
 if args.d:
     app.debug = True
@@ -98,6 +100,7 @@ def serve_data():
             print('SEND TO CLIENT:', reading)
             print('\n')
             sensor_log('update',reading)
+            sx_sender.send(reading)
         time.sleep(2)
 
 # Logging function for sensor data
@@ -209,7 +212,11 @@ def handle_arduino_command(command):
         return
 
     # TODO: Send the actual commands that Arduino would expect
-    arduino_serial.write(command);
+    print command
+    if command['cmd'][0] == 'p':
+        arduino_serial.write(command['cmd'])
+    else:
+        arduino_serial.write(command);
 
     if command['cmd'] == 'launch_pod':
         sensor_log('start', '')
