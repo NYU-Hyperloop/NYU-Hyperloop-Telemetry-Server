@@ -218,7 +218,7 @@ def handle_arduino_command(command):
     # TODO: Send the actual commands that Arduino would expect
     print command
     if command['cmd'][0] == 'p':
-        arduino_serial.write(command['cmd'])
+        arduino_serial.write(bytes(command['cmd']))
     elif command['cmd'] == 'launch_pod':
         arduino_serial.write('l')
     elif command['cmd'] == 'brake':
