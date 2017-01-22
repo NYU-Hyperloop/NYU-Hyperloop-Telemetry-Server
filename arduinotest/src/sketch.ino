@@ -70,7 +70,7 @@ void setup()
     myData.sensorData.pad16       = 0x00;
 
     // start serial
-    Serial.begin(9600);
+    Serial.begin(115200);
 }
 
 // runs continuously

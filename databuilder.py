@@ -28,4 +28,7 @@ class DataBuilder:
             assert(_type in TYPE_DICT.keys())
             self.struct_fields.append((_sensor, TYPE_DICT[_type]))
             self.struct_fields.append(('pad' + str(i), c_byte))
-            self.packet_size += 5
+            if _type == 'byte':
+                self.packet_size += 2
+            else:
+                self.packet_size += 5

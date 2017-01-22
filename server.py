@@ -219,11 +219,15 @@ def handle_arduino_command(command):
     print command
     if command['cmd'][0] == 'p':
         arduino_serial.write(command['cmd'])
+    else if command['cmd'] == 'launch_pod':
+        arduino_serial.write('l')
+    else if command['cmd'] == 'brake':
+        arduino_serial.write('b')
+    else if command['cmd'] == 'off':
+        arduino_serial.write('o')
     else:
-        arduino_serial.write(command);
+        arduino_serial.write(command['cmd']);
 
-    if command['cmd'] == 'launch_pod':
-        sensor_log('start', '')
 
 @socketio.on('server_command')
 def handle_server_command(command):
