@@ -219,11 +219,11 @@ def handle_arduino_command(command):
     print command
     if command['cmd'][0] == 'p':
         arduino_serial.write(command['cmd'])
-    else if command['cmd'] == 'launch_pod':
+    elif command['cmd'] == 'launch_pod':
         arduino_serial.write('l')
-    else if command['cmd'] == 'brake':
+    elif command['cmd'] == 'brake':
         arduino_serial.write('b')
-    else if command['cmd'] == 'off':
+    elif command['cmd'] == 'off':
         arduino_serial.write('o')
     else:
         arduino_serial.write(command['cmd']);
